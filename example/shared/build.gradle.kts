@@ -3,6 +3,7 @@ plugins {
     id("com.android.library")
     alias(libs.plugins.compose)
     alias(libs.plugins.composecompiler)
+    alias(libs.plugins.serialization)
 }
 
 val _jvmTarget = findProperty("jvmTarget") as String
@@ -50,8 +51,9 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.material3)
             implementation(compose.foundation)
-            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
+
+            implementation(libs.serialization)
         }
     }
 }

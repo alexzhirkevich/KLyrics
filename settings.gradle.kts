@@ -17,7 +17,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "compottie"
+rootProject.name = "klyrics"
 include(":klyrics")
 include(":example:desktopApp")
 include(":example:webApp")

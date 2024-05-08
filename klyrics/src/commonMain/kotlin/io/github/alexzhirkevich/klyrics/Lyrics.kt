@@ -83,10 +83,50 @@ interface Lyrics {
 
 
 @Immutable
-sealed interface LyricsEntry {
+interface LyricsEntry {
     val start : Int
     val end : Int
 }
+
+@Immutable
+sealed interface LyricsLine : LyricsEntry {
+
+    val content: String
+
+    val words: List<LyricsWord>
+
+    val alignment: Alignment.Horizontal
+
+    @Immutable
+    data class WordSynced(
+        override val start: Int = 0,
+        override val end: Int = 0,
+        override val alignment: Alignment.Horizontal = Alignment.Start,
+        override val words: List<LyricsWord>
+    ) : LyricsLine {
+
+        override val content: String = words.joinToString(separator = " ") {
+            it.content.replace(" ","⠀")
+        }
+    }
+
+    @Immutable
+    data class Default(
+        override val start: Int = 0,
+        override val end: Int = 0,
+        override val alignment: Alignment.Horizontal = Alignment.Start,
+        override val content: String
+    ) : LyricsLine {
+
+        override val words: List<LyricsWord> = content.split(" ").map {
+            LyricsWord(content = it)
+        }
+    }
+}
+
+
+
+
 
 /**
  * Lyrics word is a line part between two spaces, including special symbols, commas, etc.
@@ -95,18 +135,6 @@ sealed interface LyricsEntry {
 data class LyricsWord(
     override val start : Int = 0,
     override val end : Int = 0,
+    val content : String = ""
 ) : LyricsEntry
-
-@Immutable
-data class LyricsLine(
-    val content : String,
-    override val start : Int = 0,
-    override val end : Int = 0,
-    val alignment: Alignment.Horizontal = Alignment.Start,
-    val words : List<LyricsWord>
-) : LyricsEntry
-
-enum class LineAlignment {
-    Start, End
-}
 
