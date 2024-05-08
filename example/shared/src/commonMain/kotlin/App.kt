@@ -4,6 +4,7 @@ import androidx.compose.animation.core.AnimationVector
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.TwoWayConverter
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -251,11 +252,11 @@ private fun Modifier.appleMusicLane(
 ) = composed {
     val density = LocalDensity.current
 
-    val blurRadius = when {
+    val blurRadius by animateDpAsState(when {
         !state.autoscrollEnabled -> 0.dp
         state.currentLine < idx -> 1.5.dp * (idx - state.currentLine).coerceAtMost(4)
         else -> 3.dp * (state.currentLine - idx).coerceAtMost(4)
-    }
+    })
 
     val interactionSource = remember {
         MutableInteractionSource()

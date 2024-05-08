@@ -100,13 +100,13 @@ fun rememberLyricsState(
 fun Lyrics(
     state : LyricsState,
     textStyle : (Int) -> TextStyle,
+    focusedColor : Color,
+    unfocusedColor : Color,
     fade: Dp = 32.dp,
     autoscrollDelay : Duration = 3.seconds,
     autoscrollAnimationSpec : FiniteAnimationSpec<Float> = spring(stiffness = Spring.StiffnessMediumLow),
     focusColorAnimationSpec : FiniteAnimationSpec<Color>? = null,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    focusedColor : Color,
-    unfocusedColor : Color,
     modifier: Modifier = Modifier,
     lineModifier: (Int) -> Modifier = { Modifier },
     idleIndicator : @Composable (Int) -> Unit = {
@@ -259,8 +259,12 @@ fun DefaultLyricsIdleIndicator(
     AnimatedVisibility(
         modifier = modifier,
         visible = visible,
-        enter = expandVertically(),
-        exit = shrinkVertically()
+        enter = expandVertically(
+            animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+        ),
+        exit = shrinkVertically(
+            animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+        )
     ) {
         Spacer(
             Modifier
