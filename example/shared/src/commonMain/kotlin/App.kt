@@ -30,6 +30,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.darkColorScheme
@@ -150,6 +151,12 @@ fun App() {
                         onValueChange = {
                             snapTo(it.toInt())
                         },
+
+                        colors = SliderDefaults.colors(
+                            thumbColor = LocalContentColor.current,
+                            activeTrackColor = LocalContentColor.current,
+                            inactiveTrackColor = LocalContentColor.current.copy(alpha = .5f)
+                        ),
                         modifier = Modifier
                             .padding(
                                 horizontal = HorizontalPadding / 2,
