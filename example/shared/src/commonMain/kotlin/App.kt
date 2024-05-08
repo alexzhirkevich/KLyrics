@@ -136,7 +136,7 @@ fun App() {
                                 fontWeight = FontWeight.SemiBold
                             )
                             Text(
-                                text = "Riana",
+                                text = "Rihanna",
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Normal
                             )
