@@ -2,8 +2,8 @@ from xml.etree import ElementTree as ET
 import json
 
 
-INPUT = "work.ttml"
-OUTPUT = "work.json"
+INPUT = "desperado.ttml"
+OUTPUT = "desperado.json"
 
 
 et = ET.parse(INPUT)

@@ -1,0 +1,2056 @@
+{
+  "duration": 186451,
+  "lines": [
+    {
+      "start": 8211,
+      "end": 8811,
+      "singer": 1,
+      "words": [
+        {
+          "start": 8211,
+          "end": 8811,
+          "content": "Desperado"
+        }
+      ]
+    },
+    {
+      "start": 10615,
+      "end": 12855,
+      "singer": 1,
+      "words": [
+        {
+          "start": 10615,
+          "end": 11087,
+          "content": "Sittin'"
+        },
+        {
+          "start": 11087,
+          "end": 11247,
+          "content": "in"
+        },
+        {
+          "start": 11247,
+          "end": 11640,
+          "content": "a"
+        },
+        {
+          "start": 11640,
+          "end": 12187,
+          "content": "old"
+        },
+        {
+          "start": 12187,
+          "end": 12360,
+          "content": "Monte"
+        },
+        {
+          "start": 12360,
+          "end": 12855,
+          "content": "Carlo"
+        }
+      ]
+    },
+    {
+      "start": 13461,
+      "end": 14635,
+      "singer": 1,
+      "words": [
+        {
+          "start": 13461,
+          "end": 13659,
+          "content": "A"
+        },
+        {
+          "start": 13659,
+          "end": 13844,
+          "content": "man"
+        },
+        {
+          "start": 13844,
+          "end": 14004,
+          "content": "whose"
+        },
+        {
+          "start": 14004,
+          "end": 14159,
+          "content": "heart"
+        },
+        {
+          "start": 14159,
+          "end": 14259,
+          "content": "is"
+        },
+        {
+          "start": 14259,
+          "end": 14635,
+          "content": "hollow"
+        }
+      ]
+    },
+    {
+      "start": 14845,
+      "end": 17264,
+      "singer": 1,
+      "words": [
+        {
+          "start": 14845,
+          "end": 15160,
+          "content": "Uh-"
+        },
+        {
+          "start": 15160,
+          "end": 15608,
+          "content": "huh,"
+        },
+        {
+          "start": 15608,
+          "end": 15799,
+          "content": "take"
+        },
+        {
+          "start": 15799,
+          "end": 15977,
+          "content": "it"
+        },
+        {
+          "start": 15977,
+          "end": 17264,
+          "content": "easy"
+        }
+      ]
+    },
+    {
+      "start": 17680,
+      "end": 19013,
+      "singer": 1,
+      "words": [
+        {
+          "start": 17680,
+          "end": 17842,
+          "content": "I'm"
+        },
+        {
+          "start": 17842,
+          "end": 18015,
+          "content": "not"
+        },
+        {
+          "start": 18015,
+          "end": 18342,
+          "content": "tryna"
+        },
+        {
+          "start": 18342,
+          "end": 18442,
+          "content": "go"
+        },
+        {
+          "start": 18442,
+          "end": 18681,
+          "content": "against"
+        },
+        {
+          "start": 18681,
+          "end": 19013,
+          "content": "you"
+        }
+      ]
+    },
+    {
+      "start": 19632,
+      "end": 20915,
+      "singer": 1,
+      "words": [
+        {
+          "start": 19632,
+          "end": 20059,
+          "content": "Actually,"
+        },
+        {
+          "start": 20059,
+          "end": 20272,
+          "content": "I'm"
+        },
+        {
+          "start": 20272,
+          "end": 20443,
+          "content": "goin'"
+        },
+        {
+          "start": 20443,
+          "end": 20627,
+          "content": "with"
+        },
+        {
+          "start": 20627,
+          "end": 20915,
+          "content": "ya"
+        }
+      ]
+    },
+    {
+      "start": 21531,
+      "end": 22734,
+      "singer": 1,
+      "words": [
+        {
+          "start": 21531,
+          "end": 21830,
+          "content": "Gotta"
+        },
+        {
+          "start": 21830,
+          "end": 22016,
+          "content": "get"
+        },
+        {
+          "start": 22016,
+          "end": 22192,
+          "content": "up"
+        },
+        {
+          "start": 22192,
+          "end": 22292,
+          "content": "out"
+        },
+        {
+          "start": 22292,
+          "end": 22392,
+          "content": "of"
+        },
+        {
+          "start": 22392,
+          "end": 22734,
+          "content": "here"
+        }
+      ]
+    },
+    {
+      "start": 22686,
+      "end": 25403,
+      "singer": 1,
+      "words": [
+        {
+          "start": 22686,
+          "end": 22914,
+          "content": "And"
+        },
+        {
+          "start": 22914,
+          "end": 23080,
+          "content": "you"
+        },
+        {
+          "start": 23080,
+          "end": 23223,
+          "content": "ain't"
+        },
+        {
+          "start": 23223,
+          "end": 24467,
+          "content": "leavin'"
+        },
+        {
+          "start": 24467,
+          "end": 24871,
+          "content": "me"
+        },
+        {
+          "start": 24871,
+          "end": 25403,
+          "content": "behind"
+        }
+      ]
+    },
+    {
+      "start": 25646,
+      "end": 28803,
+      "singer": 1,
+      "words": [
+        {
+          "start": 25646,
+          "end": 25963,
+          "content": "I"
+        },
+        {
+          "start": 25963,
+          "end": 26350,
+          "content": "know"
+        },
+        {
+          "start": 26350,
+          "end": 26635,
+          "content": "you"
+        },
+        {
+          "start": 26635,
+          "end": 26939,
+          "content": "won't"
+        },
+        {
+          "start": 26939,
+          "end": 27314,
+          "content": "'cause"
+        },
+        {
+          "start": 27314,
+          "end": 27546,
+          "content": "we"
+        },
+        {
+          "start": 27546,
+          "end": 27909,
+          "content": "share"
+        },
+        {
+          "start": 27909,
+          "end": 28230,
+          "content": "common"
+        },
+        {
+          "start": 28230,
+          "end": 28803,
+          "content": "interests"
+        }
+      ]
+    },
+    {
+      "start": 28803,
+      "end": 32955,
+      "singer": 1,
+      "words": [
+        {
+          "start": 28803,
+          "end": 29245,
+          "content": "You"
+        },
+        {
+          "start": 29245,
+          "end": 29537,
+          "content": "need"
+        },
+        {
+          "start": 29537,
+          "end": 29858,
+          "content": "me,"
+        },
+        {
+          "start": 29858,
+          "end": 30227,
+          "content": "there"
+        },
+        {
+          "start": 30227,
+          "end": 30542,
+          "content": "ain't"
+        },
+        {
+          "start": 30542,
+          "end": 30734,
+          "content": "no"
+        },
+        {
+          "start": 30734,
+          "end": 32131,
+          "content": "leavin'"
+        },
+        {
+          "start": 32131,
+          "end": 32451,
+          "content": "me"
+        },
+        {
+          "start": 32451,
+          "end": 32955,
+          "content": "behind"
+        }
+      ]
+    },
+    {
+      "start": 33571,
+      "end": 36440,
+      "singer": 1,
+      "words": [
+        {
+          "start": 33571,
+          "end": 33961,
+          "content": "Never,"
+        },
+        {
+          "start": 33961,
+          "end": 34307,
+          "content": "no,"
+        },
+        {
+          "start": 34307,
+          "end": 34677,
+          "content": "no,"
+        },
+        {
+          "start": 34882,
+          "end": 35209,
+          "content": "just"
+        },
+        {
+          "start": 35209,
+          "end": 35536,
+          "content": "want"
+        },
+        {
+          "start": 35536,
+          "end": 35697,
+          "content": "out"
+        },
+        {
+          "start": 35697,
+          "end": 35839,
+          "content": "of"
+        },
+        {
+          "start": 35839,
+          "end": 36149,
+          "content": "here,"
+        },
+        {
+          "start": 36149,
+          "end": 36440,
+          "content": "yeah"
+        }
+      ]
+    },
+    {
+      "start": 36529,
+      "end": 38699,
+      "singer": 1,
+      "words": [
+        {
+          "start": 36529,
+          "end": 36846,
+          "content": "Once"
+        },
+        {
+          "start": 36846,
+          "end": 37150,
+          "content": "I'm"
+        },
+        {
+          "start": 37150,
+          "end": 37507,
+          "content": "gone,"
+        },
+        {
+          "start": 37507,
+          "end": 37792,
+          "content": "ain't"
+        },
+        {
+          "start": 37792,
+          "end": 38024,
+          "content": "no"
+        },
+        {
+          "start": 38024,
+          "end": 38331,
+          "content": "goin'"
+        },
+        {
+          "start": 38331,
+          "end": 38699,
+          "content": "back"
+        }
+      ]
+    },
+    {
+      "start": 38699,
+      "end": 42163,
+      "singer": 1,
+      "words": [
+        {
+          "start": 38699,
+          "end": 38957,
+          "content": "If"
+        },
+        {
+          "start": 38957,
+          "end": 39105,
+          "content": "you"
+        },
+        {
+          "start": 39105,
+          "end": 39616,
+          "content": "want,"
+        },
+        {
+          "start": 40162,
+          "end": 40361,
+          "content": "we"
+        },
+        {
+          "start": 40361,
+          "end": 40551,
+          "content": "could"
+        },
+        {
+          "start": 40551,
+          "end": 41088,
+          "content": "be"
+        },
+        {
+          "start": 41088,
+          "end": 42163,
+          "content": "runaways"
+        }
+      ]
+    },
+    {
+      "start": 42163,
+      "end": 45030,
+      "singer": 1,
+      "words": [
+        {
+          "start": 42163,
+          "end": 42462,
+          "content": "Runnin'"
+        },
+        {
+          "start": 42462,
+          "end": 43070,
+          "content": "from"
+        },
+        {
+          "start": 43822,
+          "end": 44023,
+          "content": "any"
+        },
+        {
+          "start": 44023,
+          "end": 44283,
+          "content": "sight"
+        },
+        {
+          "start": 44283,
+          "end": 44437,
+          "content": "of"
+        },
+        {
+          "start": 44437,
+          "end": 45030,
+          "content": "love"
+        }
+      ]
+    },
+    {
+      "start": 45315,
+      "end": 46864,
+      "singer": 1,
+      "words": [
+        {
+          "start": 45315,
+          "end": 45678,
+          "content": "Yeah,"
+        },
+        {
+          "start": 45678,
+          "end": 46021,
+          "content": "yeah,"
+        },
+        {
+          "start": 46021,
+          "end": 46221,
+          "content": "there"
+        },
+        {
+          "start": 46221,
+          "end": 46388,
+          "content": "ain't"
+        },
+        {
+          "start": 46388,
+          "end": 46864,
+          "content": "nothin'"
+        }
+      ]
+    },
+    {
+      "start": 47880,
+      "end": 49766,
+      "singer": 1,
+      "words": [
+        {
+          "start": 47880,
+          "end": 48149,
+          "content": "There"
+        },
+        {
+          "start": 48149,
+          "end": 48429,
+          "content": "ain't"
+        },
+        {
+          "start": 48429,
+          "end": 48819,
+          "content": "nothin'"
+        },
+        {
+          "start": 48819,
+          "end": 49101,
+          "content": "here"
+        },
+        {
+          "start": 49101,
+          "end": 49458,
+          "content": "for"
+        },
+        {
+          "start": 49458,
+          "end": 49766,
+          "content": "me"
+        }
+      ]
+    },
+    {
+      "start": 49766,
+      "end": 52508,
+      "singer": 1,
+      "words": [
+        {
+          "start": 49766,
+          "end": 49946,
+          "content": "There"
+        },
+        {
+          "start": 49946,
+          "end": 50107,
+          "content": "ain't"
+        },
+        {
+          "start": 50107,
+          "end": 50732,
+          "content": "nothin'"
+        },
+        {
+          "start": 50732,
+          "end": 51059,
+          "content": "here"
+        },
+        {
+          "start": 51059,
+          "end": 51398,
+          "content": "for"
+        },
+        {
+          "start": 51398,
+          "end": 51737,
+          "content": "me"
+        },
+        {
+          "start": 51737,
+          "end": 52508,
+          "content": "anymore"
+        }
+      ]
+    },
+    {
+      "start": 52508,
+      "end": 55234,
+      "singer": 1,
+      "words": [
+        {
+          "start": 52508,
+          "end": 52703,
+          "content": "But"
+        },
+        {
+          "start": 52703,
+          "end": 52887,
+          "content": "I"
+        },
+        {
+          "start": 52887,
+          "end": 53012,
+          "content": "don't"
+        },
+        {
+          "start": 53012,
+          "end": 53369,
+          "content": "wanna"
+        },
+        {
+          "start": 53369,
+          "end": 53506,
+          "content": "be"
+        },
+        {
+          "start": 53506,
+          "end": 55234,
+          "content": "alone"
+        }
+      ]
+    },
+    {
+      "start": 61531,
+      "end": 62286,
+      "singer": 1,
+      "words": [
+        {
+          "start": 61531,
+          "end": 62286,
+          "content": "Desperado"
+        }
+      ]
+    },
+    {
+      "start": 63899,
+      "end": 66330,
+      "singer": 1,
+      "words": [
+        {
+          "start": 63899,
+          "end": 64383,
+          "content": "Sittin'"
+        },
+        {
+          "start": 64383,
+          "end": 64483,
+          "content": "in"
+        },
+        {
+          "start": 64483,
+          "end": 64957,
+          "content": "a"
+        },
+        {
+          "start": 64957,
+          "end": 65368,
+          "content": "old"
+        },
+        {
+          "start": 65368,
+          "end": 65672,
+          "content": "Monte"
+        },
+        {
+          "start": 65672,
+          "end": 66330,
+          "content": "Carlo"
+        }
+      ]
+    },
+    {
+      "start": 66719,
+      "end": 68786,
+      "singer": 1,
+      "words": [
+        {
+          "start": 66719,
+          "end": 66917,
+          "content": "We"
+        },
+        {
+          "start": 66917,
+          "end": 67113,
+          "content": "both've"
+        },
+        {
+          "start": 67113,
+          "end": 67447,
+          "content": "had"
+        },
+        {
+          "start": 67447,
+          "end": 67547,
+          "content": "our"
+        },
+        {
+          "start": 67547,
+          "end": 67899,
+          "content": "hearts"
+        },
+        {
+          "start": 67899,
+          "end": 68232,
+          "content": "broke,"
+        },
+        {
+          "start": 68232,
+          "end": 68332,
+          "content": "uh-"
+        },
+        {
+          "start": 68332,
+          "end": 68786,
+          "content": "huh"
+        }
+      ]
+    },
+    {
+      "start": 68786,
+      "end": 70651,
+      "singer": 1,
+      "words": [
+        {
+          "start": 68786,
+          "end": 69067,
+          "content": "Take"
+        },
+        {
+          "start": 69067,
+          "end": 69240,
+          "content": "it"
+        },
+        {
+          "start": 69240,
+          "end": 70651,
+          "content": "easy"
+        }
+      ]
+    },
+    {
+      "start": 71051,
+      "end": 72429,
+      "singer": 1,
+      "words": [
+        {
+          "start": 71051,
+          "end": 71309,
+          "content": "I'm"
+        },
+        {
+          "start": 71309,
+          "end": 71451,
+          "content": "not"
+        },
+        {
+          "start": 71451,
+          "end": 71642,
+          "content": "trying"
+        },
+        {
+          "start": 71642,
+          "end": 71742,
+          "content": "to"
+        },
+        {
+          "start": 71742,
+          "end": 71842,
+          "content": "go"
+        },
+        {
+          "start": 71842,
+          "end": 72006,
+          "content": "against"
+        },
+        {
+          "start": 72006,
+          "end": 72429,
+          "content": "you"
+        }
+      ]
+    },
+    {
+      "start": 72955,
+      "end": 74657,
+      "singer": 1,
+      "words": [
+        {
+          "start": 72955,
+          "end": 73076,
+          "content": "I"
+        },
+        {
+          "start": 73076,
+          "end": 73242,
+          "content": "can"
+        },
+        {
+          "start": 73242,
+          "end": 73385,
+          "content": "be"
+        },
+        {
+          "start": 73385,
+          "end": 73558,
+          "content": "a"
+        },
+        {
+          "start": 73558,
+          "end": 73833,
+          "content": "lone"
+        },
+        {
+          "start": 73833,
+          "end": 74155,
+          "content": "wolf"
+        },
+        {
+          "start": 74155,
+          "end": 74324,
+          "content": "with"
+        },
+        {
+          "start": 74324,
+          "end": 74657,
+          "content": "ya"
+        }
+      ]
+    },
+    {
+      "start": 74838,
+      "end": 76073,
+      "singer": 1,
+      "words": [
+        {
+          "start": 74838,
+          "end": 75173,
+          "content": "Gotta"
+        },
+        {
+          "start": 75173,
+          "end": 75345,
+          "content": "get"
+        },
+        {
+          "start": 75345,
+          "end": 75518,
+          "content": "up"
+        },
+        {
+          "start": 75518,
+          "end": 75649,
+          "content": "out"
+        },
+        {
+          "start": 75649,
+          "end": 75749,
+          "content": "of"
+        },
+        {
+          "start": 75749,
+          "end": 76073,
+          "content": "here"
+        }
+      ]
+    },
+    {
+      "start": 76006,
+      "end": 78672,
+      "singer": 1,
+      "words": [
+        {
+          "start": 76006,
+          "end": 76157,
+          "content": "And"
+        },
+        {
+          "start": 76157,
+          "end": 76311,
+          "content": "you"
+        },
+        {
+          "start": 76311,
+          "end": 76478,
+          "content": "ain't"
+        },
+        {
+          "start": 76478,
+          "end": 77686,
+          "content": "leavin'"
+        },
+        {
+          "start": 77686,
+          "end": 78059,
+          "content": "me"
+        },
+        {
+          "start": 78059,
+          "end": 78672,
+          "content": "behind"
+        }
+      ]
+    },
+    {
+      "start": 79005,
+      "end": 82157,
+      "singer": 1,
+      "words": [
+        {
+          "start": 79005,
+          "end": 79417,
+          "content": "I"
+        },
+        {
+          "start": 79417,
+          "end": 79798,
+          "content": "know"
+        },
+        {
+          "start": 79798,
+          "end": 80084,
+          "content": "you"
+        },
+        {
+          "start": 80084,
+          "end": 80399,
+          "content": "won't"
+        },
+        {
+          "start": 80399,
+          "end": 80566,
+          "content": "'cause"
+        },
+        {
+          "start": 80566,
+          "end": 80803,
+          "content": "we"
+        },
+        {
+          "start": 80803,
+          "end": 81166,
+          "content": "share"
+        },
+        {
+          "start": 81166,
+          "end": 81488,
+          "content": "common"
+        },
+        {
+          "start": 81488,
+          "end": 82157,
+          "content": "interests"
+        }
+      ]
+    },
+    {
+      "start": 82157,
+      "end": 86258,
+      "singer": 1,
+      "words": [
+        {
+          "start": 82157,
+          "end": 82504,
+          "content": "You"
+        },
+        {
+          "start": 82504,
+          "end": 82795,
+          "content": "need"
+        },
+        {
+          "start": 82795,
+          "end": 83129,
+          "content": "me,"
+        },
+        {
+          "start": 83129,
+          "end": 83485,
+          "content": "there"
+        },
+        {
+          "start": 83485,
+          "end": 83795,
+          "content": "ain't"
+        },
+        {
+          "start": 83795,
+          "end": 84140,
+          "content": "no"
+        },
+        {
+          "start": 84140,
+          "end": 85357,
+          "content": "leavin'"
+        },
+        {
+          "start": 85357,
+          "end": 85762,
+          "content": "me"
+        },
+        {
+          "start": 85762,
+          "end": 86258,
+          "content": "behind"
+        }
+      ]
+    },
+    {
+      "start": 86905,
+      "end": 89791,
+      "singer": 1,
+      "words": [
+        {
+          "start": 86905,
+          "end": 87300,
+          "content": "Never,"
+        },
+        {
+          "start": 87300,
+          "end": 87652,
+          "content": "no,"
+        },
+        {
+          "start": 87652,
+          "end": 88086,
+          "content": "no,"
+        },
+        {
+          "start": 88286,
+          "end": 88471,
+          "content": "both"
+        },
+        {
+          "start": 88471,
+          "end": 88799,
+          "content": "want"
+        },
+        {
+          "start": 88799,
+          "end": 88965,
+          "content": "out"
+        },
+        {
+          "start": 88965,
+          "end": 89126,
+          "content": "of"
+        },
+        {
+          "start": 89126,
+          "end": 89417,
+          "content": "here,"
+        },
+        {
+          "start": 89417,
+          "end": 89791,
+          "content": "yeah"
+        }
+      ]
+    },
+    {
+      "start": 89791,
+      "end": 92044,
+      "singer": 1,
+      "words": [
+        {
+          "start": 89791,
+          "end": 90084,
+          "content": "Once"
+        },
+        {
+          "start": 90084,
+          "end": 90406,
+          "content": "we're"
+        },
+        {
+          "start": 90406,
+          "end": 90768,
+          "content": "gone,"
+        },
+        {
+          "start": 90768,
+          "end": 91066,
+          "content": "ain't"
+        },
+        {
+          "start": 91066,
+          "end": 91387,
+          "content": "no"
+        },
+        {
+          "start": 91387,
+          "end": 91703,
+          "content": "goin'"
+        },
+        {
+          "start": 91703,
+          "end": 92044,
+          "content": "back"
+        }
+      ]
+    },
+    {
+      "start": 92044,
+      "end": 95428,
+      "singer": 1,
+      "words": [
+        {
+          "start": 92044,
+          "end": 92218,
+          "content": "If"
+        },
+        {
+          "start": 92218,
+          "end": 92367,
+          "content": "you"
+        },
+        {
+          "start": 92367,
+          "end": 92988,
+          "content": "want,"
+        },
+        {
+          "start": 93575,
+          "end": 93801,
+          "content": "we"
+        },
+        {
+          "start": 93801,
+          "end": 93973,
+          "content": "could"
+        },
+        {
+          "start": 93973,
+          "end": 94556,
+          "content": "be"
+        },
+        {
+          "start": 94556,
+          "end": 95428,
+          "content": "runaways"
+        }
+      ]
+    },
+    {
+      "start": 95428,
+      "end": 98359,
+      "singer": 1,
+      "words": [
+        {
+          "start": 95428,
+          "end": 95924,
+          "content": "Runnin'"
+        },
+        {
+          "start": 95924,
+          "end": 96489,
+          "content": "from"
+        },
+        {
+          "start": 97039,
+          "end": 97292,
+          "content": "any"
+        },
+        {
+          "start": 97292,
+          "end": 97536,
+          "content": "sight"
+        },
+        {
+          "start": 97536,
+          "end": 97696,
+          "content": "of"
+        },
+        {
+          "start": 97696,
+          "end": 98359,
+          "content": "love"
+        }
+      ]
+    },
+    {
+      "start": 98657,
+      "end": 100300,
+      "singer": 1,
+      "words": [
+        {
+          "start": 98657,
+          "end": 98932,
+          "content": "Yeah,"
+        },
+        {
+          "start": 98932,
+          "end": 99249,
+          "content": "yeah,"
+        },
+        {
+          "start": 99249,
+          "end": 99492,
+          "content": "there"
+        },
+        {
+          "start": 99492,
+          "end": 99652,
+          "content": "ain't"
+        },
+        {
+          "start": 99652,
+          "end": 100300,
+          "content": "nothin'"
+        }
+      ]
+    },
+    {
+      "start": 101241,
+      "end": 103108,
+      "singer": 1,
+      "words": [
+        {
+          "start": 101241,
+          "end": 101415,
+          "content": "There"
+        },
+        {
+          "start": 101415,
+          "end": 101588,
+          "content": "ain't"
+        },
+        {
+          "start": 101588,
+          "end": 102089,
+          "content": "nothin'"
+        },
+        {
+          "start": 102089,
+          "end": 102452,
+          "content": "here"
+        },
+        {
+          "start": 102452,
+          "end": 102750,
+          "content": "for"
+        },
+        {
+          "start": 102750,
+          "end": 103108,
+          "content": "me"
+        }
+      ]
+    },
+    {
+      "start": 103108,
+      "end": 105745,
+      "singer": 1,
+      "words": [
+        {
+          "start": 103108,
+          "end": 103407,
+          "content": "There"
+        },
+        {
+          "start": 103407,
+          "end": 103568,
+          "content": "ain't"
+        },
+        {
+          "start": 103568,
+          "end": 104111,
+          "content": "nothin'"
+        },
+        {
+          "start": 104111,
+          "end": 104377,
+          "content": "here"
+        },
+        {
+          "start": 104377,
+          "end": 104657,
+          "content": "for"
+        },
+        {
+          "start": 104657,
+          "end": 105008,
+          "content": "me"
+        },
+        {
+          "start": 105008,
+          "end": 105745,
+          "content": "anymore"
+        }
+      ]
+    },
+    {
+      "start": 105847,
+      "end": 108377,
+      "singer": 1,
+      "words": [
+        {
+          "start": 105847,
+          "end": 106105,
+          "content": "I"
+        },
+        {
+          "start": 106105,
+          "end": 106271,
+          "content": "don't"
+        },
+        {
+          "start": 106271,
+          "end": 106604,
+          "content": "wanna"
+        },
+        {
+          "start": 106604,
+          "end": 106783,
+          "content": "be"
+        },
+        {
+          "start": 106783,
+          "end": 108377,
+          "content": "alone"
+        }
+      ]
+    },
+    {
+      "start": 109468,
+      "end": 111303,
+      "singer": 1,
+      "words": [
+        {
+          "start": 109468,
+          "end": 109851,
+          "content": "Dear"
+        },
+        {
+          "start": 109851,
+          "end": 111303,
+          "content": "Desperado"
+        }
+      ]
+    },
+    {
+      "start": 113354,
+      "end": 115862,
+      "singer": 1,
+      "words": [
+        {
+          "start": 113354,
+          "end": 113671,
+          "content": "Yeah,"
+        },
+        {
+          "start": 113671,
+          "end": 113787,
+          "content": "I"
+        },
+        {
+          "start": 113787,
+          "end": 113964,
+          "content": "don't"
+        },
+        {
+          "start": 113964,
+          "end": 114183,
+          "content": "wanna"
+        },
+        {
+          "start": 114183,
+          "end": 114380,
+          "content": "be"
+        },
+        {
+          "start": 114380,
+          "end": 115862,
+          "content": "alone"
+        }
+      ]
+    },
+    {
+      "start": 117063,
+      "end": 118988,
+      "singer": 1,
+      "words": [
+        {
+          "start": 117063,
+          "end": 117463,
+          "content": "Dear"
+        },
+        {
+          "start": 117463,
+          "end": 118988,
+          "content": "Desperado"
+        }
+      ]
+    },
+    {
+      "start": 120947,
+      "end": 123646,
+      "singer": 1,
+      "words": [
+        {
+          "start": 120947,
+          "end": 121103,
+          "content": "Yeah,"
+        },
+        {
+          "start": 121103,
+          "end": 121294,
+          "content": "I"
+        },
+        {
+          "start": 121294,
+          "end": 121443,
+          "content": "don't"
+        },
+        {
+          "start": 121443,
+          "end": 121850,
+          "content": "wanna"
+        },
+        {
+          "start": 121850,
+          "end": 122050,
+          "content": "be"
+        },
+        {
+          "start": 122050,
+          "end": 123646,
+          "content": "alone"
+        }
+      ]
+    },
+    {
+      "start": 137743,
+      "end": 141214,
+      "singer": 1,
+      "words": [
+        {
+          "start": 137743,
+          "end": 137864,
+          "content": "If"
+        },
+        {
+          "start": 137864,
+          "end": 138024,
+          "content": "you"
+        },
+        {
+          "start": 138024,
+          "end": 138740,
+          "content": "want,"
+        },
+        {
+          "start": 139309,
+          "end": 139446,
+          "content": "we"
+        },
+        {
+          "start": 139446,
+          "end": 139625,
+          "content": "could"
+        },
+        {
+          "start": 139625,
+          "end": 140303,
+          "content": "be"
+        },
+        {
+          "start": 140303,
+          "end": 141214,
+          "content": "runaways"
+        }
+      ]
+    },
+    {
+      "start": 141214,
+      "end": 144101,
+      "singer": 1,
+      "words": [
+        {
+          "start": 141214,
+          "end": 141573,
+          "content": "Runnin'"
+        },
+        {
+          "start": 141573,
+          "end": 142254,
+          "content": "from"
+        },
+        {
+          "start": 142929,
+          "end": 143143,
+          "content": "any"
+        },
+        {
+          "start": 143143,
+          "end": 143387,
+          "content": "sight"
+        },
+        {
+          "start": 143387,
+          "end": 143554,
+          "content": "of"
+        },
+        {
+          "start": 143554,
+          "end": 144101,
+          "content": "love"
+        }
+      ]
+    },
+    {
+      "start": 144402,
+      "end": 145951,
+      "singer": 1,
+      "words": [
+        {
+          "start": 144402,
+          "end": 144613,
+          "content": "Yeah,"
+        },
+        {
+          "start": 144613,
+          "end": 144903,
+          "content": "yeah,"
+        },
+        {
+          "start": 144903,
+          "end": 145143,
+          "content": "there"
+        },
+        {
+          "start": 145143,
+          "end": 145405,
+          "content": "ain't"
+        },
+        {
+          "start": 145405,
+          "end": 145951,
+          "content": "nothin'"
+        }
+      ]
+    },
+    {
+      "start": 146951,
+      "end": 148802,
+      "singer": 1,
+      "words": [
+        {
+          "start": 146951,
+          "end": 147060,
+          "content": "There"
+        },
+        {
+          "start": 147060,
+          "end": 147238,
+          "content": "ain't"
+        },
+        {
+          "start": 147238,
+          "end": 147778,
+          "content": "nothin'"
+        },
+        {
+          "start": 147778,
+          "end": 148146,
+          "content": "here"
+        },
+        {
+          "start": 148146,
+          "end": 148444,
+          "content": "for"
+        },
+        {
+          "start": 148444,
+          "end": 148802,
+          "content": "me"
+        }
+      ]
+    },
+    {
+      "start": 148802,
+      "end": 151570,
+      "singer": 1,
+      "words": [
+        {
+          "start": 148802,
+          "end": 149060,
+          "content": "There"
+        },
+        {
+          "start": 149060,
+          "end": 149226,
+          "content": "ain't"
+        },
+        {
+          "start": 149226,
+          "end": 149810,
+          "content": "nothin'"
+        },
+        {
+          "start": 149810,
+          "end": 150157,
+          "content": "here"
+        },
+        {
+          "start": 150157,
+          "end": 150493,
+          "content": "for"
+        },
+        {
+          "start": 150493,
+          "end": 150856,
+          "content": "me"
+        },
+        {
+          "start": 150856,
+          "end": 151570,
+          "content": "anymore"
+        }
+      ]
+    },
+    {
+      "start": 151570,
+      "end": 153005,
+      "singer": 1,
+      "words": [
+        {
+          "start": 151570,
+          "end": 151845,
+          "content": "But"
+        },
+        {
+          "start": 151845,
+          "end": 152024,
+          "content": "I"
+        },
+        {
+          "start": 152024,
+          "end": 152149,
+          "content": "don't"
+        },
+        {
+          "start": 152149,
+          "end": 152437,
+          "content": "wanna"
+        },
+        {
+          "start": 152437,
+          "end": 152576,
+          "content": "be"
+        },
+        {
+          "start": 152576,
+          "end": 153005,
+          "content": "alone"
+        }
+      ]
+    },
+    {
+      "start": 153005,
+      "end": 156434,
+      "singer": 1,
+      "words": [
+        {
+          "start": 153005,
+          "end": 153105,
+          "content": "If"
+        },
+        {
+          "start": 153105,
+          "end": 153227,
+          "content": "you"
+        },
+        {
+          "start": 153227,
+          "end": 153832,
+          "content": "want,"
+        },
+        {
+          "start": 154524,
+          "end": 154673,
+          "content": "we"
+        },
+        {
+          "start": 154673,
+          "end": 154845,
+          "content": "could"
+        },
+        {
+          "start": 154845,
+          "end": 155485,
+          "content": "be"
+        },
+        {
+          "start": 155485,
+          "end": 156434,
+          "content": "runaways"
+        }
+      ]
+    },
+    {
+      "start": 156434,
+      "end": 159285,
+      "singer": 1,
+      "words": [
+        {
+          "start": 156434,
+          "end": 156805,
+          "content": "Runnin'"
+        },
+        {
+          "start": 156805,
+          "end": 157341,
+          "content": "from"
+        },
+        {
+          "start": 158087,
+          "end": 158363,
+          "content": "any"
+        },
+        {
+          "start": 158363,
+          "end": 158607,
+          "content": "sight"
+        },
+        {
+          "start": 158607,
+          "end": 158768,
+          "content": "of"
+        },
+        {
+          "start": 158768,
+          "end": 159285,
+          "content": "love"
+        }
+      ]
+    },
+    {
+      "start": 159582,
+      "end": 161169,
+      "singer": 1,
+      "words": [
+        {
+          "start": 159582,
+          "end": 159894,
+          "content": "Yeah,"
+        },
+        {
+          "start": 159894,
+          "end": 160249,
+          "content": "yeah,"
+        },
+        {
+          "start": 160249,
+          "end": 160467,
+          "content": "there"
+        },
+        {
+          "start": 160467,
+          "end": 160708,
+          "content": "ain't"
+        },
+        {
+          "start": 160708,
+          "end": 161169,
+          "content": "nothin'"
+        }
+      ]
+    },
+    {
+      "start": 162171,
+      "end": 164054,
+      "singer": 1,
+      "words": [
+        {
+          "start": 162171,
+          "end": 162286,
+          "content": "There"
+        },
+        {
+          "start": 162286,
+          "end": 162458,
+          "content": "ain't"
+        },
+        {
+          "start": 162458,
+          "end": 163046,
+          "content": "nothin'"
+        },
+        {
+          "start": 163046,
+          "end": 163398,
+          "content": "here"
+        },
+        {
+          "start": 163398,
+          "end": 163755,
+          "content": "for"
+        },
+        {
+          "start": 163755,
+          "end": 164054,
+          "content": "me"
+        }
+      ]
+    },
+    {
+      "start": 164054,
+      "end": 166654,
+      "singer": 1,
+      "words": [
+        {
+          "start": 164054,
+          "end": 164276,
+          "content": "There"
+        },
+        {
+          "start": 164276,
+          "end": 164437,
+          "content": "ain't"
+        },
+        {
+          "start": 164437,
+          "end": 165055,
+          "content": "nothin'"
+        },
+        {
+          "start": 165055,
+          "end": 165382,
+          "content": "here"
+        },
+        {
+          "start": 165382,
+          "end": 165722,
+          "content": "for"
+        },
+        {
+          "start": 165722,
+          "end": 166067,
+          "content": "me"
+        },
+        {
+          "start": 166067,
+          "end": 166654,
+          "content": "anymore"
+        }
+      ]
+    },
+    {
+      "start": 166767,
+      "end": 169352,
+      "singer": 1,
+      "words": [
+        {
+          "start": 166767,
+          "end": 166942,
+          "content": "But"
+        },
+        {
+          "start": 166942,
+          "end": 167145,
+          "content": "I"
+        },
+        {
+          "start": 167145,
+          "end": 167309,
+          "content": "don't"
+        },
+        {
+          "start": 167309,
+          "end": 167641,
+          "content": "wanna"
+        },
+        {
+          "start": 167641,
+          "end": 167815,
+          "content": "be"
+        },
+        {
+          "start": 167815,
+          "end": 169352,
+          "content": "alone"
+        }
+      ]
+    },
+    {
+      "start": 168207,
+      "end": 169738,
+      "singer": 1,
+      "words": [
+        {
+          "start": 168207,
+          "end": 168842,
+          "content": "Yeah-"
+        },
+        {
+          "start": 168842,
+          "end": 169738,
+          "content": "yeah"
+        }
+      ]
+    },
+    {
+      "start": 170073,
+      "end": 171673,
+      "singer": 1,
+      "words": [
+        {
+          "start": 170073,
+          "end": 170670,
+          "content": "Yeah-"
+        },
+        {
+          "start": 170670,
+          "end": 171673,
+          "content": "yeah"
+        }
+      ]
+    },
+    {
+      "start": 172006,
+      "end": 173583,
+      "singer": 1,
+      "words": [
+        {
+          "start": 172006,
+          "end": 172674,
+          "content": "Yeah-"
+        },
+        {
+          "start": 172674,
+          "end": 173583,
+          "content": "yeah"
+        }
+      ]
+    },
+    {
+      "start": 173898,
+      "end": 175823,
+      "singer": 1,
+      "words": [
+        {
+          "start": 173898,
+          "end": 174671,
+          "content": "Yeah-"
+        },
+        {
+          "start": 174671,
+          "end": 175823,
+          "content": "yeah"
+        }
+      ]
+    },
+    {
+      "start": 175823,
+      "end": 177375,
+      "singer": 1,
+      "words": [
+        {
+          "start": 175823,
+          "end": 176522,
+          "content": "Yeah-"
+        },
+        {
+          "start": 176522,
+          "end": 177375,
+          "content": "yeah"
+        }
+      ]
+    },
+    {
+      "start": 177690,
+      "end": 180966,
+      "singer": 1,
+      "words": [
+        {
+          "start": 177690,
+          "end": 178469,
+          "content": "Yeah-"
+        },
+        {
+          "start": 178469,
+          "end": 180966,
+          "content": "yeah"
+        }
+      ]
+    }
+  ]
+}
