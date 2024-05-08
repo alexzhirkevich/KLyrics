@@ -155,10 +155,6 @@ fun Lyrics(
         }
     }
 
-
-    val topPaddingPx = LocalDensity.current.run {
-        contentPadding.calculateTopPadding().roundToPx()
-    }
     if (state.autoscrollEnabled) {
 
         var lastIndex by remember {
@@ -177,7 +173,7 @@ fun Lyrics(
                     it.index == state.currentLine
                 }
 
-                if (lastItem != null && scrollToItem != null && scrollToItem.offset>topPaddingPx){
+                if (lastItem != null && scrollToItem != null && scrollToItem.offset >= 0){
                     val diff = (scrollToItem.offset - lastItem.offset).toFloat()
 
                     println(scrollToItem.offset)
