@@ -102,7 +102,8 @@ fun Lyrics(
     textStyle : (Int) -> TextStyle,
     fade: Dp = 32.dp,
     autoscrollDelay : Duration = 3.seconds,
-    focusColorAnimation : FiniteAnimationSpec<Color>? = null,
+    autoscrollAnimationSpec : FiniteAnimationSpec<Float> = spring(stiffness = Spring.StiffnessMediumLow),
+    focusColorAnimationSpec : FiniteAnimationSpec<Color>? = null,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     focusedColor : Color,
     unfocusedColor : Color,
@@ -177,7 +178,7 @@ fun Lyrics(
 
                     state.lazyListState.animateScrollBy(
                         value = diff,
-                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+                        animationSpec = autoscrollAnimationSpec
                     )
                 } else {
                     state.lazyListState.animateScrollToItem(state.currentLine)
@@ -211,7 +212,7 @@ fun Lyrics(
                 index = idx,
                 style = textStyle(idx),
                 fade = fade,
-                focusAnimation = focusColorAnimation,
+                focusAnimation = focusColorAnimationSpec,
                 focusedSolidBrush = focusedSolidBrush,
                 unfocusedSolidBrush = unfocusedSolidBrush,
                 focusedColor = focusedColor,
