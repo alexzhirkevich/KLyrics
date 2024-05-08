@@ -256,7 +256,8 @@ private fun Modifier.appleMusicLane(
         !state.autoscrollEnabled -> 0.dp
         state.currentLine < idx -> 1.5.dp * (idx - state.currentLine).coerceAtMost(4)
         else -> 3.dp * (state.currentLine - idx).coerceAtMost(4)
-    })
+    }, animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+    )
 
     val interactionSource = remember {
         MutableInteractionSource()
@@ -274,11 +275,8 @@ private fun Modifier.appleMusicLane(
     )
 
     // FIXME: width crash
-    val width = remember {
-        density.run { constraints.maxWidth.toDp() *  3/4 }
-    }
 
-    widthIn(max = width)
+    widthIn(max = density.run { constraints.maxWidth.toDp() *  3/4})
         .padding(
             vertical = 8.dp,
             horizontal = HorizontalPadding/2

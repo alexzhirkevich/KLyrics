@@ -48,6 +48,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
@@ -155,6 +156,9 @@ fun Lyrics(
     }
 
 
+    val topPaddingPx = LocalDensity.current.run {
+        contentPadding.calculateTopPadding().roundToPx()
+    }
     if (state.autoscrollEnabled) {
 
         var lastIndex by remember {
@@ -173,9 +177,10 @@ fun Lyrics(
                     it.index == state.currentLine
                 }
 
-                if (lastItem != null && scrollToItem != null){
-                    val diff =  (scrollToItem.offset - lastItem.offset).toFloat()
+                if (lastItem != null && scrollToItem != null && scrollToItem.offset>topPaddingPx){
+                    val diff = (scrollToItem.offset - lastItem.offset).toFloat()
 
+                    println(scrollToItem.offset)
                     state.lazyListState.animateScrollBy(
                         value = diff,
                         animationSpec = autoscrollAnimationSpec
