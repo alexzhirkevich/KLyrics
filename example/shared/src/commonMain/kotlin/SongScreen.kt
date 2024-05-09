@@ -16,6 +16,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -431,19 +432,22 @@ private fun Modifier.appleMusicLane(
 ) = composed {
     val density = LocalDensity.current
 
-    val blurRadius by animateDpAsState(
-        when {
-            !state.isAutoScrolling -> 0.dp
-            state.currentLine < idx -> 1.5.dp * (idx - state.currentLine).coerceAtMost(4)
-            else -> 3.dp * (state.currentLine - idx).coerceAtMost(4)
-        }, animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
-    )
 
     val interactionSource = remember {
         MutableInteractionSource()
     }
 
     val pressed by interactionSource.collectIsPressedAsState()
+    val hovered by interactionSource.collectIsHoveredAsState()
+
+    val blurRadius by animateDpAsState(
+        when {
+            hovered || !state.isAutoScrolling -> 0.dp
+            state.currentLine < idx -> 1.5.dp * (idx - state.currentLine).coerceAtMost(4)
+            else -> 3.dp * (state.currentLine - idx).coerceAtMost(4)
+        }, animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+    )
+
 
     val scale by animateFloatAsState(
         when {
