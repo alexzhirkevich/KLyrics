@@ -25,7 +25,7 @@ class MockPlayer(
 
     override suspend fun init(track: ByteArray) {}
 
-    override suspend fun init(url: String) {
+    override suspend fun init(uri: String) {
     }
 
     override suspend fun play() {

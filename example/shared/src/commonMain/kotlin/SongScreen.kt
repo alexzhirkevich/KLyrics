@@ -36,7 +36,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -69,6 +68,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -130,7 +130,7 @@ fun SongScreen(
         val focus = remember { FocusRequester() }
 
         LaunchedEffect(0) {
-            player.init(url = song.url)
+            player.init(uri = song.url)
         }
 
         LaunchedEffect(0) {
@@ -172,7 +172,9 @@ fun SongScreen(
         ) {
 
             val focusedColor = LocalContentColor.current
-            val unfocusedColor = focusedColor.copy(alpha = .5f)
+
+            // the same as LocalContentColor.current.copy(alpha = .5f) but alpha blending is buggy on Android
+            val unfocusedColor = lerp(LocalContentColor.current, MaterialTheme.colorScheme.background, .5f)
 
             val lastLaneStyle = MaterialTheme.typography.titleLarge
 

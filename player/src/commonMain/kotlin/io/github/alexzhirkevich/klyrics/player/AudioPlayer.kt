@@ -11,7 +11,7 @@ interface AudioPlayer {
 
     suspend fun init(track: ByteArray)
 
-    suspend fun init(url: String)
+    suspend fun init(uri: String)
 
     suspend fun play()
 

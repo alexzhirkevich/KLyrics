@@ -48,6 +48,7 @@ import androidx.compose.ui.draw.CacheDrawScope
 import androidx.compose.ui.draw.DrawResult
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -583,10 +584,10 @@ private fun LazyItemScope.LyricsLaneView(
         style = style,
         measurer = measurer,
         modifier = modifier
-    ){parentConstraints, measureResult ->
+    ) { parentConstraints, measureResult ->
 
-        if (unfocused){
-            return@Line  onDrawBehind {
+        if (unfocused) {
+            return@Line onDrawBehind {
                 drawText(
                     textLayoutResult = measureResult,
                     color = animatedFocusColor
@@ -617,8 +618,7 @@ private fun LazyItemScope.LyricsLaneView(
                 brush = { w ->
 
                     val endIndex = startIndex + wordsCount - 1
-
-                    if (startIndex !in line.words.indices || endIndex !in line.words.indices){
+                    if (startIndex !in line.words.indices || endIndex !in line.words.indices) {
                         return@Subline unfocusedSolidBrush
                     }
 
@@ -661,6 +661,7 @@ private fun LazyItemScope.LyricsLaneView(
         }
     }
 }
+
 
 
 
