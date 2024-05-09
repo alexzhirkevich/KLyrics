@@ -58,6 +58,6 @@ class W3CPlayer(): AudioPlayer {
     }
 
     override suspend fun seek(time: Int) {
-        audio.fastSeek(time.toDouble()/1000)
+        audio.currentTime = time.toDouble()/1000
     }
 }
