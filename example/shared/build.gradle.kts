@@ -48,10 +48,7 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":klyrics"))
             implementation(project(":player"))
-            implementation(compose.ui)
-            implementation(compose.runtime)
             implementation(compose.material3)
-            implementation(compose.foundation)
             implementation(compose.components.resources)
 
             implementation(libs.serialization)

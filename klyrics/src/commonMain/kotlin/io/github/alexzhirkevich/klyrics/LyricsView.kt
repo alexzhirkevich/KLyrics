@@ -13,11 +13,10 @@ import androidx.compose.animation.core.createAnimation
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandIn
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Column
@@ -65,6 +64,7 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
@@ -79,18 +79,20 @@ import kotlin.time.Duration.Companion.seconds
 class LyricsState(
     val lyrics: Lyrics,
     val lazyListState: LazyListState,
-    val playbackTime: () -> Int,
+    internal val isPlaying: () -> Boolean,
+    internal val playbackTime: () -> Int,
 ) {
     var currentLine : Int by mutableIntStateOf(-1)
         internal set
 
-    var isAutoScrolling : Boolean by mutableStateOf(true)
+    var isAutoScrolling : Boolean by mutableStateOf(isPlaying())
         internal set
 }
 
 @Composable
 fun rememberLyricsState(
     lyrics: Lyrics,
+    isPlaying : () -> Boolean,
     lazyListState: LazyListState = rememberLazyListState(),
     playbackTime : () -> Int,
 ) : LyricsState {
@@ -99,8 +101,18 @@ fun rememberLyricsState(
         playbackTime()
     }
 
+    val updatedIsPlaying by rememberUpdatedState {
+        isPlaying()
+    }
+
     return remember(lyrics, lazyListState) {
-        LyricsState(lyrics, lazyListState){
+        LyricsState(
+            lyrics = lyrics,
+            lazyListState = lazyListState,
+            isPlaying = {
+                updatedIsPlaying()
+            }
+        ){
             updatedTime()
         }
     }
@@ -112,20 +124,7 @@ enum class AutoscrollMode {
     Continuous
 }
 
-private val DefaultTextStyle = TextStyle(
-    fontSize = 32.sp,
-    lineHeight = 38.sp,
-    fontWeight = FontWeight.SemiBold
-).copy(
-    lineHeightStyle = LineHeightStyle(
-        alignment = LineHeightStyle.Alignment.Center,
-        trim = LineHeightStyle.Trim.None
-    )
-)
 
-private val DefaultTextStyleReversed = DefaultTextStyle.copy(
-    textAlign = TextAlign.End
-)
 
 @Composable
 fun Lyrics(
@@ -134,12 +133,13 @@ fun Lyrics(
     unfocusedColor : Color,
     textStyle : (Int) -> TextStyle = {
         if (state.lyrics.lanes[it].alignment == Alignment.End)
-            DefaultTextStyleReversed else DefaultTextStyle
+            LyricsDefaults.TextStyleEndAligned
+        else LyricsDefaults.TextStyleEndAligned
     },
-    fade: Dp = 32.dp,
-    autoscrollMode: AutoscrollMode = AutoscrollMode.Docked,
-    autoscrollDelay : Duration = 3.seconds,
-    autoscrollAnimationSpec : FiniteAnimationSpec<Float> = spring(stiffness = Spring.StiffnessMediumLow),
+    fade: Dp = LyricsDefaults.Fade,
+    autoscrollMode: AutoscrollMode = LyricsDefaults.AutoScrollMode,
+    autoscrollDelay : Duration = LyricsDefaults.AutoscrollDelay,
+    autoscrollAnimationSpec : FiniteAnimationSpec<Float> = LyricsDefaults.AutoScrollAnimation,
     focusColorAnimationSpec : FiniteAnimationSpec<Color>? = null,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     modifier: Modifier = Modifier,
@@ -166,7 +166,9 @@ fun Lyrics(
 
     LaunchedEffect(state) {
         snapshotFlow {
-            state.lazyListState.isScrollInProgress && !isScrollingProgrammatically
+            state.lazyListState.isScrollInProgress &&
+                    !isScrollingProgrammatically ||
+                    !state.isPlaying()
         }.collectLatest {
             if (it) {
                 state.isAutoScrolling = false
@@ -262,8 +264,59 @@ fun Lyrics(
     }
 }
 
+@Stable
+object LyricsDefaults {
+
+    val TextStyle = TextStyle(
+        fontSize = 32.sp,
+        lineHeight = 38.sp,
+        fontWeight = FontWeight.SemiBold
+    ).copy(
+        lineHeightStyle = LineHeightStyle(
+            alignment = LineHeightStyle.Alignment.Center,
+            trim = LineHeightStyle.Trim.None
+        )
+    )
+
+    val TextStyleEndAligned = TextStyle.copy(
+        textAlign = TextAlign.End
+    )
+
+    val Fade = 32.dp
+
+    val AutoscrollDelay = 3.seconds
+    val AutoScrollMode = AutoscrollMode.Docked
+    val AutoScrollAnimation = spring<Float>(stiffness = Spring.StiffnessMediumLow)
+
+    @Composable
+    fun IdleIndicator(
+        index: Int,
+        state: LyricsState,
+        focusedColor: Color,
+        unfocusedColor: Color,
+        radius : Dp = 8.dp,
+        spacing : Dp = radius,
+        enter: EnterTransition = DefaultIdleEnterTransition,
+        exit: ExitTransition = DefaultIdleExitTransition,
+        modifier: Modifier = Modifier
+    ) {
+        DefaultLyricsIdleIndicator(
+            index = index,
+            state = state,
+            focusedColor = focusedColor,
+            unfocusedColor = unfocusedColor,
+            radius = radius,
+            spacing = spacing,
+            enter = enter,
+            exit = exit,
+            modifier = modifier
+        )
+    }
+}
+
+
 @Composable
-fun DefaultLyricsIdleIndicator(
+private fun DefaultLyricsIdleIndicator(
     index: Int,
     state: LyricsState,
     focusedColor: Color,
@@ -326,9 +379,7 @@ fun DefaultLyricsIdleIndicator(
         val alphaKeyframes = remember(totalDuration) {
             keyframes {
                 durationMillis = totalDuration
-                0f at 0
-                0f at IdleIn / 2
-                1f at IdleIn
+                1f at 0
                 1f at totalDuration - IdleOut
                 0f at totalDuration
             }.vectorize(Float.VectorConverter).createAnimation(
@@ -399,9 +450,13 @@ private const val IdleScaleMax = 1.15f
 private const val IdleScaleMin = 0.8f
 private const val LyricsIdleIndicatorMinDuration = 7000
 
+private val DefaultSpring = spring<Float>(stiffness = Spring.StiffnessMediumLow)
+private val DefaultSpringSize = spring<IntSize>(stiffness = Spring.StiffnessMediumLow)
+
 private val DefaultIdleEnterTransition = expandVertically(
-    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
-)
+    animationSpec = DefaultSpringSize
+) + fadeIn(DefaultSpring)
+
 
 private val DefaultIdleExitTransition = shrinkVertically(
     animationSpec =  spring(stiffness = Spring.StiffnessMediumLow)

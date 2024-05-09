@@ -42,6 +42,11 @@ class JavaPlayer(): AudioPlayer {
             delay(16)
         }
     }
+
+    override suspend fun init(url: String) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun pause() {
         withContext(Dispatchers.IO) {
             player?.close()

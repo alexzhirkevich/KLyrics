@@ -35,6 +35,7 @@ kotlin {
     wasmJs(){
         browser()
     }
+
     js(IR){
         browser()
     }
@@ -62,15 +63,11 @@ kotlin {
 
             }
         }
-        val wasmJsMain by getting
 
-        val skikoMain by creating {
+        val webMain by creating {
             dependsOn(commonMain.get())
-            desktopMain.dependsOn(this)
-            iosMain.get().dependsOn(this)
-            macosMain.get().dependsOn(this)
             jsMain.get().dependsOn(this)
-            wasmJsMain.dependsOn(this)
+            wasmJsMain.get().dependsOn(this)
         }
     }
 }

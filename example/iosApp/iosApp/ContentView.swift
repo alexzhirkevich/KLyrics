@@ -13,7 +13,10 @@ struct ComposeView: UIViewControllerRepresentable {
 struct ContentView: View {
     var body: some View {
         ComposeView()
-            .ignoresSafeArea() 
+            .ignoresSafeArea()
+            .preferredColorScheme(.dark)
+            .background(Color(red: 28, green: 27, blue: 31))
+
     }
 }
 

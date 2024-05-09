@@ -31,7 +31,11 @@ suspend fun loadLyrics(
                     )
                 }
             )
-        }
+        } + LyricsLane.Default(
+            start = l.lines.last().words.last().end,
+            end = l.duration,
+            content = "Alex Zhirkevich\n KLyrics\n Compose Multiplatform"
+        )
     )
 }
 

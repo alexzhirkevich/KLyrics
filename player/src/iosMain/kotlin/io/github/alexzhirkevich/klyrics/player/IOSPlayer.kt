@@ -1,5 +1,8 @@
 package io.github.alexzhirkevich.klyrics.player
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.allocArrayOf
 import kotlinx.cinterop.memScoped
@@ -13,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
 import platform.AVFAudio.AVAudioPlayer
 import platform.AVFAudio.AVAudioSession
 import platform.AVFAudio.AVAudioSessionCategoryOptionDefaultToSpeaker
@@ -46,45 +50,63 @@ class IOSPlayer(): AudioPlayer {
         }
     }.flowOn(Dispatchers.IO)
 
+
+    private var _playing by mutableStateOf(false)
+
     override val isPlaying: Boolean
-        get() = avPlayer?.isPlaying() == true
+        get() = _playing
 
     override suspend fun init(track: ByteArray) {
         avPlayer = AVAudioPlayer(track.toNSData(), null).apply {
-            this.numberOfLoops = 10000
+            initPLayer(this)
         }
+    }
+
+    override suspend fun init(url: String) {
+        avPlayer = AVAudioPlayer(NSURL.URLWithString(url)!!, null).apply {
+            initPLayer(this)
+        }
+    }
+
+    private fun initPLayer(player: AVAudioPlayer){
+        player.numberOfLoops = 1000
     }
 
     @OptIn(ExperimentalForeignApi::class)
     override suspend fun play() {
-        session
-            .setCategory(
-                category = AVAudioSessionCategoryPlayback,
-                mode = AVAudioSessionModeDefault,
-                options = AVAudioSessionCategoryOptionDefaultToSpeaker,
+        withContext(Dispatchers.IO) {
+            session
+                .setCategory(
+                    category = AVAudioSessionCategoryPlayback,
+                    error = null
+                )
+            session.setActive(
+                active = true,
+                withOptions = AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation,
                 error = null
             )
-        session.setActive(
-            active = true,
-            withOptions = AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation,
-            error = null
-        )
 
-        requireNotNull(avPlayer){
-            "Player is not initialized"
-        }.play()
+            _playing = requireNotNull(avPlayer) {
+                "Player is not initialized"
+            }.play()
+        }
     }
 
     override suspend fun pause() {
-        session.setActive(
-            active = false,
-            withOptions = AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation,
-            error = null
-        )
+        withContext(Dispatchers.IO) {
+            session.setActive(
+                active = false,
+                withOptions = AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation,
+                error = null
+            )
+            _playing = false
+        }
     }
 
     override suspend fun seek(time: Int) {
-        avPlayer?.setCurrentTime(time.toDouble()/1000)
+        requireNotNull(avPlayer) {
+            "Player is not initialized"
+        }.setCurrentTime(time.toDouble()/1000)
     }
 }
 
