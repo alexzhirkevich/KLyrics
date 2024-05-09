@@ -152,3 +152,5 @@ if (System.getenv("GPG_KEY") != null) {
         sign(publishing.publications)
     }
 }
+
+composeCompiler.enableStrongSkippingMode = true

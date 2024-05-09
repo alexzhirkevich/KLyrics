@@ -19,6 +19,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "klyrics"
 include(":klyrics")
+include(":player")
 include(":example:desktopApp")
 include(":example:webApp")
 include(":example:androidapp")

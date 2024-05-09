@@ -1,6 +1,8 @@
 package io.github.alexzhirkevich.klyrics
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.FastOutLinearInEasing
@@ -11,7 +13,11 @@ import androidx.compose.animation.core.createAnimation
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
 import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Column
@@ -37,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.CacheDrawScope
 import androidx.compose.ui.draw.DrawResult
@@ -48,15 +55,18 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -74,7 +84,7 @@ class LyricsState(
     var currentLine : Int by mutableIntStateOf(-1)
         internal set
 
-    var autoscrollEnabled : Boolean by mutableStateOf(true)
+    var isAutoScrolling : Boolean by mutableStateOf(true)
         internal set
 }
 
@@ -96,14 +106,38 @@ fun rememberLyricsState(
     }
 }
 
+enum class AutoscrollMode {
+    Disabled,
+    Docked,
+    Continuous
+}
+
+private val DefaultTextStyle = TextStyle(
+    fontSize = 32.sp,
+    lineHeight = 38.sp,
+    fontWeight = FontWeight.SemiBold
+).copy(
+    lineHeightStyle = LineHeightStyle(
+        alignment = LineHeightStyle.Alignment.Center,
+        trim = LineHeightStyle.Trim.None
+    )
+)
+
+private val DefaultTextStyleReversed = DefaultTextStyle.copy(
+    textAlign = TextAlign.End
+)
 
 @Composable
 fun Lyrics(
     state : LyricsState,
-    textStyle : (Int) -> TextStyle,
     focusedColor : Color,
     unfocusedColor : Color,
+    textStyle : (Int) -> TextStyle = {
+        if (state.lyrics.lanes[it].alignment == Alignment.End)
+            DefaultTextStyleReversed else DefaultTextStyle
+    },
     fade: Dp = 32.dp,
+    autoscrollMode: AutoscrollMode = AutoscrollMode.Docked,
     autoscrollDelay : Duration = 3.seconds,
     autoscrollAnimationSpec : FiniteAnimationSpec<Float> = spring(stiffness = Spring.StiffnessMediumLow),
     focusColorAnimationSpec : FiniteAnimationSpec<Color>? = null,
@@ -120,7 +154,9 @@ fun Lyrics(
     }
 ) {
 
-    val measurer = rememberTextMeasurer()
+    val measurer = rememberTextMeasurer(
+        cacheSize = 30
+    )
 
     val lines = state.lyrics.lanes
 
@@ -130,13 +166,13 @@ fun Lyrics(
 
     LaunchedEffect(state) {
         snapshotFlow {
-            state.lazyListState.isScrollInProgress
+            state.lazyListState.isScrollInProgress && !isScrollingProgrammatically
         }.collectLatest {
-            if (it && !isScrollingProgrammatically) {
-                state.autoscrollEnabled = false
+            if (it) {
+                state.isAutoScrolling = false
             } else {
                 delay(autoscrollDelay)
-                state.autoscrollEnabled = true
+                state.isAutoScrolling = true
             }
         }
     }
@@ -155,7 +191,7 @@ fun Lyrics(
         }
     }
 
-    if (state.autoscrollEnabled) {
+    if (autoscrollMode != AutoscrollMode.Disabled && state.isAutoScrolling) {
 
         var lastIndex by remember {
             mutableStateOf(state.currentLine)
@@ -174,9 +210,10 @@ fun Lyrics(
                 }
 
                 if (lastItem != null && scrollToItem != null && scrollToItem.offset >= 0){
-                    val diff = (scrollToItem.offset - lastItem.offset).toFloat()
+                    val diff = if (autoscrollMode == AutoscrollMode.Continuous)
+                            (scrollToItem.offset - lastItem.offset).toFloat()
+                    else scrollToItem.offset.toFloat()
 
-                    println(scrollToItem.offset)
                     state.lazyListState.animateScrollBy(
                         value = diff,
                         animationSpec = autoscrollAnimationSpec
@@ -225,12 +262,6 @@ fun Lyrics(
     }
 }
 
-private const val IdleIn = 1000
-private const val IdleOut = 300
-private const val IdleScaleMax = 1.15f
-private const val IdleScaleMin = 0.8f
-private const val LyricsIdleIndicatorMinDuration = 7000
-
 @Composable
 fun DefaultLyricsIdleIndicator(
     index: Int,
@@ -239,6 +270,8 @@ fun DefaultLyricsIdleIndicator(
     unfocusedColor: Color,
     radius : Dp = 8.dp,
     spacing : Dp = radius,
+    enter: EnterTransition = DefaultIdleEnterTransition,
+    exit: ExitTransition = DefaultIdleExitTransition,
     modifier: Modifier = Modifier
 ) {
     val currentLineIdx = index
@@ -257,18 +290,56 @@ fun DefaultLyricsIdleIndicator(
     }
     val circleDuration = (endTime - startTime) / 3
 
+    val totalDuration = (endTime - startTime)
+    val durationWithoutEnterExit = (totalDuration - IdleIn - IdleOut)
+
     AnimatedVisibility(
-        modifier = modifier,
         visible = visible,
-        enter = expandVertically(
-            animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
-        ),
-        exit = shrinkVertically(
-            animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
-        )
+        enter = enter,
+        exit = exit
     ) {
+
+        val scaleKeyframes = remember(totalDuration, durationWithoutEnterExit) {
+            keyframes {
+                durationMillis = totalDuration
+                1f at 0
+                1f at IdleIn
+                IdleScaleMax at IdleIn + durationWithoutEnterExit * 1 / 3
+                IdleScaleMin at IdleIn + durationWithoutEnterExit * 2 / 3
+//                        1f at circlesEnd
+                IdleScaleMax at IdleIn + durationWithoutEnterExit
+
+                repeat(EasingSteps) {
+                    val f = it.toFloat() / EasingSteps
+                    1.15f * (1f - Easing.transform(f)) at ((IdleIn + durationWithoutEnterExit) +
+                            IdleOut / EasingSteps * it)
+                }
+
+                0f at totalDuration
+            }.vectorize(Float.VectorConverter).createAnimation(
+                initialValue = AnimationVector1D(1f),
+                targetValue = AnimationVector1D(1f),
+                initialVelocity = AnimationVector1D(0f)
+            )
+        }
+
+        val alphaKeyframes = remember(totalDuration) {
+            keyframes {
+                durationMillis = totalDuration
+                0f at 0
+                0f at IdleIn / 2
+                1f at IdleIn
+                1f at totalDuration - IdleOut
+                0f at totalDuration
+            }.vectorize(Float.VectorConverter).createAnimation(
+                initialValue = AnimationVector1D(0f),
+                targetValue = AnimationVector1D(0f),
+                initialVelocity = AnimationVector1D(0f)
+            )
+        }
+
         Spacer(
-            Modifier
+            modifier
                 .width(radius * 6 + spacing * 2)
                 .height(radius * 2)
                 .drawWithCache {
@@ -285,48 +356,7 @@ fun DefaultLyricsIdleIndicator(
                         )
                     }
 
-                    val totalDuration = (endTime - startTime)
-                    val durationWithoutEnterExit = (totalDuration - IdleIn - IdleOut)
-
-                    val easingSteps = 10
-
-                    val circlesEnd = ((IdleScaleMax - IdleScaleMin / (durationWithoutEnterExit/3)) * (IdleScaleMax - 1)).toInt()
-
-                    val scaleKeyframes = keyframes {
-                        durationMillis = totalDuration
-                        1f at 0
-                        1f at IdleIn
-                        IdleScaleMax at IdleIn + durationWithoutEnterExit * 1/3
-                        IdleScaleMin at IdleIn + durationWithoutEnterExit * 2/3
-//                        1f at circlesEnd
-                        IdleScaleMax at IdleIn + durationWithoutEnterExit
-
-                        repeat(easingSteps) {
-                            val f = it.toFloat() / easingSteps
-                            1.15f * (1f - CupertinoEasing.transform(f)) at ((IdleIn + durationWithoutEnterExit) +
-                                    IdleOut/easingSteps* it)
-                        }
-
-                        0f at totalDuration
-                    }.vectorize(Float.VectorConverter).createAnimation(
-                        initialValue = AnimationVector1D(1f),
-                        targetValue = AnimationVector1D(1f),
-                        initialVelocity = AnimationVector1D(0f)
-                    )
-
-                    val alphaKeyframes = keyframes {
-                        durationMillis = totalDuration
-                        0f at 0
-                        0f at IdleIn/2
-                        1f at IdleIn
-                        1f at totalDuration - IdleOut
-                        0f at totalDuration
-                    }.vectorize(Float.VectorConverter).createAnimation(
-                        initialValue = AnimationVector1D(0f),
-                        targetValue = AnimationVector1D(0f),
-                        initialVelocity = AnimationVector1D(0f)
-                    )
-
+//                    val circlesEnd = ((IdleScaleMax - IdleScaleMin / (durationWithoutEnterExit/3)) * (IdleScaleMax - 1)).toInt()
 
                     onDrawBehind {
                         val time = state.playbackTime()
@@ -361,7 +391,23 @@ fun DefaultLyricsIdleIndicator(
     }
 }
 
-private fun List<LyricsLane>.findLane(ms : Int) : Int? {
+private val Easing = FastOutLinearInEasing
+private val EasingSteps = 10
+private const val IdleIn = 1000
+private const val IdleOut = 300
+private const val IdleScaleMax = 1.15f
+private const val IdleScaleMin = 0.8f
+private const val LyricsIdleIndicatorMinDuration = 7000
+
+private val DefaultIdleEnterTransition = expandVertically(
+    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
+)
+
+private val DefaultIdleExitTransition = shrinkVertically(
+    animationSpec =  spring(stiffness = Spring.StiffnessMediumLow)
+)
+
+private fun List<LyricsLane>.findLane(ms : Int) : Int {
 
     return binarySearchClosest {
         when {
@@ -372,7 +418,7 @@ private fun List<LyricsLane>.findLane(ms : Int) : Int? {
     }
 }
 
-public fun <T> List<T>.binarySearchClosest(comparison: (T) -> Int): Int {
+private fun <T> List<T>.binarySearchClosest(comparison: (T) -> Int): Int {
 
     var low = 0
     var high = lastIndex
@@ -561,8 +607,6 @@ private fun LazyItemScope.LyricsLaneView(
     }
 }
 
-private val CupertinoEasing = FastOutLinearInEasing//CubicBezierEasing( 0.2833f, 0.99f, 0.31833f, 0.99f)
-private val DefaultFocusAnimation = tween<Color>(250, easing = CupertinoEasing)
 
 
 @Immutable

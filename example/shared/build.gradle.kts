@@ -47,6 +47,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(project(":klyrics"))
+            implementation(project(":player"))
             implementation(compose.ui)
             implementation(compose.runtime)
             implementation(compose.material3)
@@ -75,3 +76,5 @@ android {
         minSdk = 24
     }
 }
+
+composeCompiler.enableStrongSkippingMode = true
