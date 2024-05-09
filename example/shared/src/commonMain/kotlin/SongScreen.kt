@@ -140,7 +140,7 @@ fun SongScreen(
 
         Scaffold(
             modifier = Modifier
-                .widthIn(max = 800.dp)
+                .widthIn(max = 600.dp)
                 .fillMaxWidth()
                 .focusRequester(focus)
                 .onKeyEvent {

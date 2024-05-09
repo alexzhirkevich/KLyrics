@@ -12,15 +12,15 @@ import org.w3c.dom.Audio
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-actual class W3CPlayer actual constructor(): AudioPlayer {
+class W3CPlayer(): AudioPlayer {
 
     private val audio = Audio().apply {
         onplay = {
-            this@W3CPlayer._isPlaying = true
+            this@W3CPlayer.isPlaying = true
             null
         }
         onpause = {
-            this@W3CPlayer._isPlaying = false
+            this@W3CPlayer.isPlaying = false
             null
         }
     }
@@ -33,18 +33,16 @@ actual class W3CPlayer actual constructor(): AudioPlayer {
         }
     }.cancellable()
 
-    private var _isPlaying: Boolean by mutableStateOf(!audio.paused)
-
-    override val isPlaying: Boolean
-        get() = _isPlaying
+    override var isPlaying: Boolean by mutableStateOf(!audio.paused)
+        private set
 
     @OptIn(ExperimentalEncodingApi::class)
     override suspend fun init(track: ByteArray) {
         audio.src = "data:audio/wav;base64," + Base64.encode(track)
     }
 
-    override suspend fun init(url: String) {
-        audio.src = url
+    override suspend fun init(uri: String) {
+        audio.src = uri
     }
 
     override suspend fun play() {

@@ -21,7 +21,7 @@ suspend fun loadLyrics(
         lanes = l.lines.map {
             LyricsLane.WordSynced(
                 start = it.start,
-                end = it.words.last().end,
+                end = it.end,//words.last().end,
                 alignment = if (it.singer == 1) Alignment.Start else Alignment.End,
                 words = it.words.map {
                     LyricsWord(

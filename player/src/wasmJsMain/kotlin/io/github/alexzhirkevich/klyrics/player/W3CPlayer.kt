@@ -12,7 +12,7 @@ import org.w3c.dom.Audio
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-actual class W3CPlayer actual constructor(): AudioPlayer {
+class W3CPlayer(): AudioPlayer {
 
     private val audio = Audio().apply {
         onplay = {
@@ -43,13 +43,13 @@ actual class W3CPlayer actual constructor(): AudioPlayer {
         audio.src = "data:audio/wav;base64," + Base64.encode(track)
     }
 
-    override suspend fun init(url: String) {
-        audio.src = url
+    override suspend fun init(uri: String) {
+        audio.src = uri
     }
 
     override suspend fun play() {
         if (!isPlaying) {
-            audio.play()
+            audio.play() // TODO await
         }
     }
 
