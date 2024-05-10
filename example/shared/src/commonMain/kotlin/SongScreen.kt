@@ -282,22 +282,25 @@ private fun LyricsTopBar(
                 .clip(MaterialTheme.shapes.small)
         )
 
-        Column {
+        Column(Modifier.weight(1f)) {
             Text(
                 text = name,
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.basicMarquee()
+                modifier = Modifier.basicMarquee(
+                    iterations = Int.MAX_VALUE
+                ),
+                maxLines = 1,
             )
             Text(
                 text = artist,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Normal,
-                color = LocalContentColor.current.copy(alpha = .5f)
+                color = LocalContentColor.current.copy(alpha = .5f),
+                maxLines = 1,
             )
         }
 
-        Spacer(Modifier.weight(1f))
 
         val uriHandler = LocalUriHandler.current
 
