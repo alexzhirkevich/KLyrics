@@ -1,7 +1,7 @@
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.util.fastSumBy
 import io.github.alexzhirkevich.klyrics.Lyrics
-import io.github.alexzhirkevich.klyrics.LyricsLane
+import io.github.alexzhirkevich.klyrics.LyricsLine
 import io.github.alexzhirkevich.klyrics.LyricsWord
 import klyrics.example.shared.generated.resources.Res
 import kotlinx.serialization.Serializable
@@ -18,8 +18,8 @@ suspend fun loadLyrics(
 
     return Lyrics(
         duration = l.duration,
-        lanes = l.lines.map {
-            LyricsLane.WordSynced(
+        lines = l.lines.map {
+            LyricsLine.WordSynced(
                 start = it.start,
                 end = it.end,//words.last().end,
                 alignment = if (it.singer == 1) Alignment.Start else Alignment.End,
@@ -33,7 +33,7 @@ suspend fun loadLyrics(
                     )
                 }
             )
-        } + LyricsLane.Default(
+        } + LyricsLine.Default(
             start = l.lines.last().words.last().end,
             end = l.duration,
             content = "Alex Zhirkevich\n KLyrics\n Compose Multiplatform"

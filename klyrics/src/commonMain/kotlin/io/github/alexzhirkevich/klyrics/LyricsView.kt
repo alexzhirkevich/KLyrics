@@ -3,7 +3,6 @@ package io.github.alexzhirkevich.klyrics
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FiniteAnimationSpec
@@ -52,11 +51,9 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -135,7 +132,7 @@ fun Lyrics(
     unfocusedColor : Color,
     textStyle : (Int) -> TextStyle = {
         when {
-            state.lyrics.lanes[it].alignment == Alignment.End ->  LyricsDefaults.TextStyleEndAligned
+            state.lyrics.lines[it].alignment == Alignment.End ->  LyricsDefaults.TextStyleEndAligned
             else ->  LyricsDefaults.TextStyleEndAligned
         }
     },
@@ -165,7 +162,7 @@ fun Lyrics(
         cacheSize = 30
     )
 
-    val lines = state.lyrics.lanes
+    val lines = state.lyrics.lines
 
     var isScrollingProgrammatically by remember {
         mutableStateOf(false)
@@ -372,8 +369,8 @@ private fun DefaultLyricsIdleIndicator(
 ) {
     val currentLineIdx = index
 
-    val startTime = if (currentLineIdx == 0) 0 else state.lyrics.lanes[currentLineIdx - 1].end
-    val endTime = state.lyrics.lanes[currentLineIdx].start
+    val startTime = if (currentLineIdx == 0) 0 else state.lyrics.lines[currentLineIdx - 1].end
+    val endTime = state.lyrics.lines[currentLineIdx].start
 
     val visible by remember(state) {
         derivedStateOf {
@@ -382,7 +379,7 @@ private fun DefaultLyricsIdleIndicator(
             t < endTime &&
                     index == state.firstFocusedLine &&
                     endTime - startTime > LyricsIdleIndicatorMinDuration ||
-                    index == 0 && t < state.lyrics.lanes[0].start &&
+                    index == 0 && t < state.lyrics.lines[0].start &&
                     startTime > LyricsIdleIndicatorMinDuration
         }
     }
@@ -508,7 +505,7 @@ private val DefaultIdleExitTransition = shrinkVertically(
     animationSpec =  spring(stiffness = Spring.StiffnessMediumLow)
 )
 
-private fun List<LyricsLane>.findLane(ms : Int) : Int {
+private fun List<LyricsLine>.findLane(ms : Int) : Int {
 
     return binarySearchClosest {
         when {
@@ -541,7 +538,7 @@ internal fun <T> List<T>.binarySearchClosest(comparison: (T) -> Int): Int {
 
 @Composable
 private fun LazyItemScope.Line(
-    line: LyricsLane,
+    line: LyricsLine,
     style : TextStyle,
     backgroundTextStyle: TextStyle,
     measurer : TextMeasurer,
@@ -616,7 +613,7 @@ private fun LazyItemScope.Line(
 @Composable
 private fun LazyItemScope.LyricsLaneView(
     state: LyricsState,
-    line: LyricsLane,
+    line: LyricsLine,
     index : Int,
     style : TextStyle,
     backgroundTextStyle: TextStyle,
@@ -631,7 +628,7 @@ private fun LazyItemScope.LyricsLaneView(
 
     val unfocused by remember {
         derivedStateOf {
-            index !in state.lyrics.lanes.indices || !line.isFocused(state.playbackTime())
+            index !in state.lyrics.lines.indices || !line.isFocused(state.playbackTime())
         }
     }
 

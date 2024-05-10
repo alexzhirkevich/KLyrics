@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -76,6 +75,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
@@ -88,7 +88,6 @@ import io.github.alexzhirkevich.klyrics.player.AudioPlayer
 import io.github.alexzhirkevich.klyrics.player.rememberAudioPlayer
 import io.github.alexzhirkevich.klyrics.rememberLyricsState
 import klyrics.example.shared.generated.resources.Res
-import klyrics.example.shared.generated.resources.anti
 import klyrics.example.shared.generated.resources.cmp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -187,20 +186,20 @@ fun SongScreen(
                     state = lyricsState,
                     textStyle = {
                         when {
-                            it == song.lyrics.lanes.lastIndex -> lastLaneStyle
-                            song.lyrics.lanes[it].alignment == Alignment.End -> LyricsDefaults.TextStyleEndAligned
+                            it == song.lyrics.lines.lastIndex -> lastLaneStyle
+                            song.lyrics.lines[it].alignment == Alignment.End -> LyricsDefaults.TextStyleEndAligned
                             else -> LyricsDefaults.TextStyle
                         }
                     },
                     lineModifier = { idx ->
-                        val line = song.lyrics.lanes[idx]
+                        val line = song.lyrics.lines[idx]
 
                         Modifier.appleMusicLane(
                             state = lyricsState,
                             idx = idx,
-                            isAnnotation = idx == song.lyrics.lanes.lastIndex,
+                            isAnnotation = idx == song.lyrics.lines.lastIndex,
                             constraints = constraints,
-                            singleArtist = song.lyrics.lanes.all { it.alignment == Alignment.Start },
+                            singleArtist = song.lyrics.lines.all { it.alignment == Alignment.Start },
                             onClick = {
                                 scope.launch {
                                     player.seek(line.start)
@@ -233,7 +232,7 @@ fun SongScreen(
                                     onClick = {
                                         scope.launch {
                                             player.seek(
-                                                if (it == 0) 0 else lyricsState.lyrics.lanes[it-1].end + 1
+                                                if (it == 0) 0 else lyricsState.lyrics.lines[it-1].end + 1
                                             )
                                         }
                                     }
@@ -269,7 +268,8 @@ private fun LyricsTopBar(
             )
             .windowInsetsPadding(TopAppBarDefaults.windowInsets)
             .padding(horizontal = HorizontalPadding)
-            .padding(bottom = 28.dp, top = 8.dp),
+            .padding(bottom = 28.dp, top = 8.dp)
+            .pointerInput(0){},
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
