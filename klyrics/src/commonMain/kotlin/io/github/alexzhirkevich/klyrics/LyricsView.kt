@@ -148,7 +148,6 @@ fun Lyrics(
     autoscrollMode: AutoscrollMode = LyricsDefaults.AutoScrollMode,
     autoscrollDelay : Duration = LyricsDefaults.AutoscrollDelay,
     autoscrollAnimationSpec : FiniteAnimationSpec<Float> = LyricsDefaults.AutoScrollAnimation,
-    focusColorAnimationSpec : FiniteAnimationSpec<Color>? = null,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     modifier: Modifier = Modifier,
     lineModifier: (Int) -> Modifier = { Modifier },
@@ -286,7 +285,6 @@ fun Lyrics(
                 style = textStyle(idx),
                 backgroundTextStyle = backgroundStyle,
                 fade = fade,
-                focusAnimation = focusColorAnimationSpec,
                 focusedSolidBrush = focusedSolidBrush,
                 unfocusedSolidBrush = unfocusedSolidBrush,
                 focusedColor = focusedColor,
@@ -627,7 +625,6 @@ private fun LazyItemScope.LyricsLaneView(
     unfocusedSolidBrush : Brush,
     focusedColor : Color,
     unfocusedColor : Color,
-    focusAnimation : FiniteAnimationSpec<Color>?,
     measurer : TextMeasurer,
     modifier: Modifier = Modifier,
 ) {
@@ -647,14 +644,14 @@ private fun LazyItemScope.LyricsLaneView(
         modifier = modifier
     ) { parentConstraints, measureResult ->
 
-//        if (unfocused) {
-//            return@Line onDrawBehind {
-//                drawText(
-//                    textLayoutResult = measureResult,
-//                    color = animatedFocusColor
-//                )
-//            }
-//        }
+        if (unfocused) {
+            return@Line onDrawBehind {
+                drawText(
+                    textLayoutResult = measureResult,
+                    color = unfocusedColor
+                )
+            }
+        }
 
         val wordsToDraw = line.words.fastMapIndexed { idx, w ->
 

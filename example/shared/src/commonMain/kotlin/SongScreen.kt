@@ -129,8 +129,6 @@ fun SongScreen(
             playback.value
         }
 
-        println(lyricsState.firstFocusedLine to lyricsState.lastFocusedLine)
-
         val focus = remember { FocusRequester() }
 
         LaunchedEffect(0) {
