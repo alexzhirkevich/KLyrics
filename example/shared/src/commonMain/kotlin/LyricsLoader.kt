@@ -1,4 +1,5 @@
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.util.fastSumBy
 import io.github.alexzhirkevich.klyrics.Lyrics
 import io.github.alexzhirkevich.klyrics.LyricsLane
 import io.github.alexzhirkevich.klyrics.LyricsWord
@@ -6,7 +7,6 @@ import klyrics.example.shared.generated.resources.Res
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.resources.ExperimentalResourceApi
-
 
 @OptIn(ExperimentalResourceApi::class)
 suspend fun loadLyrics(
@@ -23,11 +23,13 @@ suspend fun loadLyrics(
                 start = it.start,
                 end = it.end,//words.last().end,
                 alignment = if (it.singer == 1) Alignment.Start else Alignment.End,
-                words = it.words.map {
+                words = it.words.mapIndexed { i, w ->
                     LyricsWord(
-                        start = it.start,
-                        end = it.end,
-                        content = it.content
+                        start = w.start,
+                        end = w.end,
+                        content = w.content,
+                        firstCharIndexInLine = it.words.take(i).fastSumBy { it.content.length } + i,
+                        isBackground = w.bg
                     )
                 }
             )
@@ -59,5 +61,6 @@ private class JsonLyricsLine(
 private class JsonLyricsWord(
     val start : Int,
     val end : Int,
-    val content : String
+    val content : String,
+    val bg : Boolean = false
 )
