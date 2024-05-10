@@ -52,8 +52,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -98,6 +98,7 @@ import org.jetbrains.compose.resources.painterResource
 data class Song(
     val lyrics: Lyrics,
     val url : String,
+    val cover: Painter,
     val name : String,
     val artist: String
 )
@@ -127,6 +128,8 @@ fun SongScreen(
         ) {
             playback.value
         }
+
+        println(lyricsState.firstFocusedLine to lyricsState.lastFocusedLine)
 
         val focus = remember { FocusRequester() }
 
@@ -158,7 +161,7 @@ fun SongScreen(
                 },
             topBar = {
                 LyricsTopBar(
-                    cover = painterResource(Res.drawable.anti),
+                    cover = song.cover,
                     name = song.name,
                     artist = song.artist
                 )
@@ -440,19 +443,25 @@ private fun Modifier.appleMusicLane(
     val pressed by interactionSource.collectIsPressedAsState()
     val hovered by interactionSource.collectIsHoveredAsState()
 
+
     val blurRadius by animateDpAsState(
         when {
             hovered || !state.isAutoScrolling -> 0.dp
-            state.currentLine < idx -> 1.5.dp * (idx - state.currentLine).coerceAtMost(4)
-            else -> 3.dp * (state.currentLine - idx).coerceAtMost(4)
+            state.lastFocusedLine < idx -> 1.5.dp * (idx - state.lastFocusedLine).coerceAtMost(4)
+            else -> 3.dp * (state.firstFocusedLine - idx).coerceAtMost(4)
         }, animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
     )
 
+    val isFocused by remember(state) {
+        derivedStateOf {
+            idx in state.firstFocusedLine..state.lastFocusedLine
+        }
+    }
 
     val scale by animateFloatAsState(
         when {
             pressed -> .975f
-            state.currentLine == idx -> 1.025f
+            isFocused -> 1.025f
             else -> 1f
         },
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow)
@@ -460,15 +469,14 @@ private fun Modifier.appleMusicLane(
 
 
     val alpha by animateFloatAsState(
-        if (!isAnnotation || idx == state.currentLine) 1f else 0f
+        if (!isAnnotation || isFocused) 1f else 0f
     )
 
-    // FIXME: width crash
-    widthIn(max = density.run { constraints.maxWidth.toDp() * if (singleArtist) 1f else 2 / 3f })
-    padding(
-        vertical = 8.dp,
-        horizontal = HorizontalPadding / 2
-    )
+    widthIn(max = density.run { constraints.maxWidth.toDp() * if (singleArtist) 1f else 5 / 6f })
+        .padding(
+            vertical = 8.dp,
+            horizontal = HorizontalPadding / 2
+        )
         .clip(RoundedCornerShape(HorizontalPadding / 2))
         .clickable(
             interactionSource = interactionSource,

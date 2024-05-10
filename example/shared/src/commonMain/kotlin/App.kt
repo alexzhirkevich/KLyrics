@@ -14,7 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import io.github.alexzhirkevich.klyrics.Lyrics
 import klyrics.example.shared.generated.resources.Res
+import klyrics.example.shared.generated.resources.mmlp2
 import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.painterResource
 
 
 @OptIn(ExperimentalResourceApi::class)
@@ -34,7 +36,7 @@ fun App() {
         ) {
 
             val resourceLyrics: Lyrics? by produceState<Lyrics?>(null) {
-                value = loadLyrics("files/desperado/lyrics.json")
+                value = loadLyrics("files/monster/lyrics.json")
             }
 
             val lyrics = resourceLyrics
@@ -44,13 +46,15 @@ fun App() {
                     color = LocalContentColor.current.copy(alpha = .5f)
                 )
             } else {
+                val cover = painterResource(Res.drawable.mmlp2)
                 SongScreen(
-                    song = remember(lyrics) {
+                    song = remember(lyrics, cover) {
                         Song(
                             lyrics = lyrics,
-                            url = Res.getUri("files/desperado/audio.mp3"),
-                            name = "Desperado",
-                            artist = "Rihanna"
+                            url = Res.getUri("files/monster/audio.mp3"),
+                            cover = cover,
+                            name = "Monster (feat. Rihanna)",
+                            artist = "Eminem"
                         )
                     }
                 )
