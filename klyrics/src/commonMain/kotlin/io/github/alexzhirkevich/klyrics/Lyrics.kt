@@ -6,7 +6,7 @@ import androidx.compose.ui.Alignment
 
 
 @Immutable
-class Lyrics(
+data class Lyrics(
     val duration: Int,
     val lines: List<LyricsLine>,
 )

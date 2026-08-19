@@ -14,18 +14,8 @@ kotlin {
 
     applyDefaultHierarchyTemplate()
     jvm("desktop") {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = _jvmTarget
-            }
-        }
     }
     androidTarget() {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = _jvmTarget
-            }
-        }
     }
     js(IR) {
         browser()
@@ -34,15 +24,15 @@ kotlin {
         browser()
     }
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
-            baseName = "shared"
-        }
-    }
+//    listOf(
+//        iosX64(),
+//        iosArm64(),
+//        iosSimulatorArm64()
+//    ).forEach {
+//        it.binaries.framework {
+//            baseName = "shared"
+//        }
+//    }
 
     sourceSets {
         commonMain.dependencies {
@@ -50,7 +40,7 @@ kotlin {
             implementation(project(":player"))
             implementation(compose.material3)
             implementation(compose.components.resources)
-
+            implementation("org.jetbrains.compose.material:material-icons-core:1.7.3")
             implementation(libs.serialization)
         }
     }
@@ -73,5 +63,3 @@ android {
         minSdk = 24
     }
 }
-
-composeCompiler.enableStrongSkippingMode = true

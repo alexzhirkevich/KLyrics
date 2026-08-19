@@ -65,8 +65,11 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.painter.Painter
@@ -81,11 +84,12 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import io.github.alexzhirkevich.klyrics.ImageMeshGradient
 import io.github.alexzhirkevich.klyrics.Lyrics
 import io.github.alexzhirkevich.klyrics.LyricsDefaults
 import io.github.alexzhirkevich.klyrics.LyricsState
 import io.github.alexzhirkevich.klyrics.player.AudioPlayer
-import io.github.alexzhirkevich.klyrics.player.rememberAudioPlayer
+import io.github.alexzhirkevich.klyrics.player.rememberAudioPlayer2
 import io.github.alexzhirkevich.klyrics.rememberLyricsState
 import klyrics.example.shared.generated.resources.Res
 import klyrics.example.shared.generated.resources.cmp
@@ -113,7 +117,8 @@ fun SongScreen(
         contentAlignment = Alignment.Center
     ) {
 
-        val player = rememberAudioPlayer(song.lyrics.duration)
+
+        val player = rememberAudioPlayer2(song.lyrics.duration)
 
         val scope = rememberCoroutineScope()
 
@@ -139,7 +144,14 @@ fun SongScreen(
             focus.requestFocus()
         }
 
+        ImageMeshGradient(
+            modifier = Modifier.matchParentSize(),
+            image = song.cover
+        )
+
         Scaffold(
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
                 .widthIn(max = 600.dp)
                 .fillMaxWidth()
@@ -170,20 +182,52 @@ fun SongScreen(
                     playback = playback.value
                 )
             }
-        ) {
+        ) { pv ->
 
             val focusedColor = LocalContentColor.current
 
             // the same as LocalContentColor.current.copy(alpha = .5f) but alpha blending is buggy on Android
-            val unfocusedColor = lerp(LocalContentColor.current, MaterialTheme.colorScheme.background, .5f)
+            val unfocusedColor = lerp(LocalContentColor.current, MaterialTheme.colorScheme.background, .6f)
 
             val lastLaneStyle = MaterialTheme.typography.titleLarge
 
             BoxWithConstraints {
                 Lyrics(
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                        .drawWithCache {
+                            val topBrush = Brush.verticalGradient(
+                                0f to Color.Transparent,
+                                1f to Color.Black
+                            )
+
+                            val bottomBrush = Brush.verticalGradient(
+                                0f to Color.Black,
+                                1f to Color.Transparent
+                            )
+
+                            val top = pv.calculateTopPadding().toPx()
+                            val bottom = pv.calculateBottomPadding().toPx()
+
+                            onDrawWithContent {
+                                drawContent()
+                                drawRect(
+                                    brush = topBrush,
+                                    size = size.copy(height = top.coerceIn(0f, size.height)),
+                                    blendMode = BlendMode.DstIn
+                                )
+
+                                drawRect(
+                                    brush = bottomBrush,
+                                    topLeft = Offset(0f, (size.height - bottom).coerceIn(0f, size.height)),
+                                    size = size.copy(height = bottom.coerceIn(0f, size.height)),
+                                    blendMode = BlendMode.DstIn
+                                )
+                            }
+                        },
                     state = lyricsState,
+//                    shadow = 2.dp,
                     textStyle = {
                         when {
                             it == song.lyrics.lines.lastIndex -> lastLaneStyle
@@ -213,8 +257,8 @@ fun SongScreen(
                     focusedColor = focusedColor,
                     unfocusedColor = unfocusedColor,
                     contentPadding = PaddingValues(
-                        top = 42.dp + it.calculateTopPadding(),
-                        bottom = 20.dp + it.calculateBottomPadding()
+                        top = 42.dp + pv.calculateTopPadding(),
+                        bottom = 20.dp + pv.calculateBottomPadding()
                     ),
                     idleIndicator = {
                         LyricsDefaults.IdleIndicator(
@@ -256,16 +300,23 @@ private fun LyricsTopBar(
     name : String,
     artist : String
 ) {
+
+//    val background =  Brush.verticalGradient(
+//        0f to Color.Black,
+//        .9f to Color.Black,
+//        1f to Color.Transparent
+//    )
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(
-                Brush.verticalGradient(
-                    0f to MaterialTheme.colorScheme.background,
-                    .9f to MaterialTheme.colorScheme.background,
-                    1f to Color.Transparent
-                )
-            )
+
+//            .background(
+//                Brush.verticalGradient(
+//                    0f to MaterialTheme.colorScheme.background,
+//                    .9f to MaterialTheme.colorScheme.background,
+//                    1f to Color.Transparent
+//                )
+//            )
             .windowInsetsPadding(TopAppBarDefaults.windowInsets)
             .padding(horizontal = HorizontalPadding)
             .padding(bottom = 28.dp, top = 8.dp)
@@ -330,37 +381,12 @@ private fun LyricsBottomBar(
     playback : Int,
 ) {
 
-    val bg = MaterialTheme.colorScheme.background
 
     val scope = rememberCoroutineScope()
 
     Box(
         Modifier
             .fillMaxWidth()
-            .drawWithCache {
-                val brush = if (lyricsState.isAutoScrolling) {
-                    Brush.verticalGradient(
-                        0f to Color.Transparent,
-                        .5f to bg,
-                        1f to bg
-                    )
-                } else {
-                    Brush.verticalGradient(
-                        0f to Color.Transparent,
-                        1f to bg
-                    )
-                }
-                onDrawBehind {
-                    drawRect(brush)
-                }
-            }
-            .background(
-                Brush.verticalGradient(
-                    0f to Color.Transparent,
-                    .5f to MaterialTheme.colorScheme.background,
-                    1f to MaterialTheme.colorScheme.background
-                )
-            )
             .navigationBarsPadding()
 
     ) {
