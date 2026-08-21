@@ -1,4 +1,4 @@
-./gradlew jsBrowserDistribution || return -1
+./gradlew example:webApp:composeCompatibilityBrowserDistribution || return -1
 rm -rf ./composeResources
 cp -r ./example/webApp/build/dist/js/productionExecutable/* .
 rm -rf ./META-INF
