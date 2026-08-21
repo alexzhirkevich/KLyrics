@@ -36,7 +36,7 @@ sealed interface LyricsLine : LyricsEntry {
     ): Float
 
     @Immutable
-    data class WordSynced(
+    data class Syllable(
         override val start: Int = 0,
         override val end: Int = 0,
         override val alignment: Alignment.Horizontal = Alignment.Start,
@@ -65,7 +65,7 @@ sealed interface LyricsLine : LyricsEntry {
     }
 
     @Immutable
-    data class Default(
+    data class LineSynced(
         override val start: Int = 0,
         override val end: Int = 0,
         override val alignment: Alignment.Horizontal = Alignment.Start,
@@ -127,6 +127,9 @@ data class LyricsWord(
     override val end : Int = 0,
     val content : String = "",
     val firstCharIndexInLine : Int,
-    val isBackground : Boolean = false
+    /**
+     * Word that should have smaller font size and be aligned to the bottom of the line
+     * */
+    val isAdLib : Boolean = false
 ) : LyricsEntry
 

@@ -12,6 +12,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.MutatorMutex
 import androidx.compose.foundation.background
 import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
@@ -24,8 +25,12 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -56,6 +61,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.BlurredEdgeTreatment
@@ -78,6 +84,8 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalUriHandler
@@ -89,7 +97,7 @@ import io.github.alexzhirkevich.klyrics.Lyrics
 import io.github.alexzhirkevich.klyrics.LyricsDefaults
 import io.github.alexzhirkevich.klyrics.LyricsState
 import io.github.alexzhirkevich.klyrics.player.AudioPlayer
-import io.github.alexzhirkevich.klyrics.player.rememberAudioPlayer2
+import io.github.alexzhirkevich.klyrics.player.rememberAudioPlayer
 import io.github.alexzhirkevich.klyrics.rememberLyricsState
 import klyrics.example.shared.generated.resources.Res
 import klyrics.example.shared.generated.resources.cmp
@@ -106,19 +114,19 @@ data class Song(
     val artist: String
 )
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SongScreen(
     song: Song
 ) {
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.Center
     ) {
 
-
-        val player = rememberAudioPlayer2(song.lyrics.duration)
+        val player = rememberAudioPlayer(song.lyrics.duration)
 
         val scope = rememberCoroutineScope()
 
@@ -126,12 +134,9 @@ fun SongScreen(
 
         val lyricsState = rememberLyricsState(
             lyrics = song.lyrics,
-            isPlaying = {
-                player.isPlaying
-            }
-        ) {
-            playback.value
-        }
+            isPlaying = { player.isPlaying },
+            playbackTime =  {  playback.value }
+        )
 
         val focus = remember { FocusRequester() }
 
@@ -149,13 +154,23 @@ fun SongScreen(
             image = song.cover
         )
 
+        val isVertical = constraints.maxHeight > constraints.maxWidth / 1.2f
+        val moveMutex = remember { MutatorMutex() }
         Scaffold(
-            containerColor = Color.Transparent,
+            containerColor = MaterialTheme.colorScheme.background.copy(alpha = .5f),
             contentColor = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier
-                .widthIn(max = 600.dp)
                 .fillMaxWidth()
                 .focusRequester(focus)
+                .onPointerEvent(PointerEventType.Move){
+                    scope.launch {
+                        moveMutex.mutate {
+                            lyricsState.isAutoScrolling = false
+                            delay(LyricsDefaults.AutoscrollDelay)
+                            lyricsState.isAutoScrolling = true
+                        }
+                    }
+                }
                 .onKeyEvent {
                     if (it.type == KeyEventType.KeyDown && it.key == Key.Spacebar) {
                         scope.launch {
@@ -169,11 +184,20 @@ fun SongScreen(
                     } else false
                 },
             topBar = {
-                LyricsTopBar(
-                    cover = song.cover,
-                    name = song.name,
-                    artist = song.artist
-                )
+                if (isVertical) {
+                    LyricsHeaderVertical(
+                        cover = song.cover,
+                        name = song.name,
+                        artist = song.artist
+                    )
+                } else {
+                    Spacer(
+                        Modifier
+                            .height(128.dp)
+                            .fillMaxWidth()
+                            .pointerInput(0){}
+                    )
+                }
             },
             bottomBar = {
                 LyricsBottomBar(
@@ -186,108 +210,164 @@ fun SongScreen(
 
             val focusedColor = LocalContentColor.current
 
-            // the same as LocalContentColor.current.copy(alpha = .5f) but alpha blending is buggy on Android
-            val unfocusedColor = lerp(LocalContentColor.current, MaterialTheme.colorScheme.background, .6f)
+            val unfocusedColor = lerp(
+                LocalContentColor.current,
+                MaterialTheme.colorScheme.background,
+                .5f
+            )
 
             val lastLaneStyle = MaterialTheme.typography.titleLarge
 
-            BoxWithConstraints {
-                Lyrics(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-                        .drawWithCache {
-                            val topBrush = Brush.verticalGradient(
-                                0f to Color.Transparent,
-                                1f to Color.Black
-                            )
+            Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-                            val bottomBrush = Brush.verticalGradient(
-                                0f to Color.Black,
-                                1f to Color.Transparent
-                            )
+                if (!isVertical) {
+                    Spacer(Modifier.weight(.25f))
+                    LyricsHeaderHorizontal(
+                        modifier = Modifier.weight(.5f)
+                            .padding(pv)
+                            .fillMaxHeight(),
+                        cover = song.cover,
+                        name = song.name,
+                        artist = song.artist
+                    )
+                    Spacer(Modifier.weight(.25f))
+                }
 
-                            val top = pv.calculateTopPadding().toPx()
-                            val bottom = pv.calculateBottomPadding().toPx()
-
-                            onDrawWithContent {
-                                drawContent()
-                                drawRect(
-                                    brush = topBrush,
-                                    size = size.copy(height = top.coerceIn(0f, size.height)),
-                                    blendMode = BlendMode.DstIn
-                                )
-
-                                drawRect(
-                                    brush = bottomBrush,
-                                    topLeft = Offset(0f, (size.height - bottom).coerceIn(0f, size.height)),
-                                    size = size.copy(height = bottom.coerceIn(0f, size.height)),
-                                    blendMode = BlendMode.DstIn
-                                )
-                            }
-                        },
-                    state = lyricsState,
-//                    shadow = 2.dp,
-                    textStyle = {
-                        when {
-                            it == song.lyrics.lines.lastIndex -> lastLaneStyle
-                            song.lyrics.lines[it].alignment == Alignment.End -> LyricsDefaults.TextStyleEndAligned
-                            else -> LyricsDefaults.TextStyle
-                        }
-                    },
-                    lineModifier = { idx ->
-                        val line = song.lyrics.lines[idx]
-
-                        Modifier.appleMusicLane(
-                            state = lyricsState,
-                            idx = idx,
-                            isAnnotation = idx == song.lyrics.lines.lastIndex,
-                            constraints = constraints,
-                            singleArtist = song.lyrics.lines.all { it.alignment == Alignment.Start },
-                            onClick = {
-                                scope.launch {
-                                    player.seek(line.start)
-                                    if (!player.isPlaying) {
-                                        player.play()
-                                    }
-                                }
-                            }
-                        )
-                    },
-                    focusedColor = focusedColor,
-                    unfocusedColor = unfocusedColor,
-                    contentPadding = PaddingValues(
-                        top = 42.dp + pv.calculateTopPadding(),
-                        bottom = 20.dp + pv.calculateBottomPadding()
-                    ),
-                    idleIndicator = {
-                        LyricsDefaults.IdleIndicator(
-                            index = it,
-                            state = lyricsState,
-                            focusedColor = focusedColor,
-                            unfocusedColor = unfocusedColor,
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    BoxWithConstraints(
+                        Modifier
+                            .widthIn(max = 650.dp)
+                            .fillMaxSize()
+                    ) {
+                        Lyrics(
                             modifier = Modifier
-                                .padding(
-                                    horizontal = HorizontalPadding / 2 ,
-                                    vertical = VerticalPadding
-                                )
-                                .clip(MaterialTheme.shapes.medium)
-                                .clickable(
+                                .fillMaxSize()
+                                .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                                .drawWithCache {
+                                    val topBrush = Brush.verticalGradient(
+                                        0f to Color.Black.copy(alpha = 0f),
+                                        1f to Color.Black
+                                    )
+
+                                    val bottomBrush = Brush.verticalGradient(
+                                        0f to Color.Black,
+                                        .5f to Color.Black,
+                                        1f to Color.Transparent
+                                    )
+
+                                    val top = pv.calculateTopPadding().toPx()
+                                    val bottom = pv.calculateBottomPadding().toPx()
+
+                                    onDrawWithContent {
+                                        drawContent()
+                                        drawRect(
+                                            brush = topBrush,
+                                            size = size.copy(
+                                                height = top.coerceIn(
+                                                    0f,
+                                                    size.height
+                                                )
+                                            ),
+                                            blendMode = BlendMode.DstIn
+                                        )
+//                                drawRect(
+//
+//                                    topLeft = Offset(0f, top/2),
+//                                    size = size.copy(height = (top/2).coerceIn(0f, size.height)),
+//                                    blendMode = BlendMode.SrcIn
+//                                )
+
+                                        drawRect(
+                                            brush = bottomBrush,
+                                            topLeft = Offset(
+                                                0f,
+                                                (size.height - bottom).coerceIn(0f, size.height)
+                                            ),
+                                            size = size.copy(
+                                                height = bottom.coerceIn(
+                                                    0f,
+                                                    size.height
+                                                )
+                                            ),
+                                            blendMode = BlendMode.DstIn
+                                        )
+                                    }
+                                },
+                            state = lyricsState,
+//                    shadow = 2.dp,
+                            textStyle = {
+                                when {
+                                    it == song.lyrics.lines.lastIndex -> lastLaneStyle
+                                    song.lyrics.lines[it].alignment == Alignment.End -> LyricsDefaults.TextStyleEndAligned
+                                    else -> LyricsDefaults.TextStyle
+                                }
+                            },
+                            lineModifier = { idx ->
+                                val line = song.lyrics.lines[idx]
+
+                                Modifier.appleMusicLane(
+                                    state = lyricsState,
+                                    idx = idx,
+                                    isAnnotation = idx == song.lyrics.lines.lastIndex,
+                                    constraints = constraints,
+                                    singleArtist = song.lyrics.lines.all { it.alignment == Alignment.Start },
                                     onClick = {
                                         scope.launch {
-                                            player.seek(
-                                                if (it == 0) 0 else lyricsState.lyrics.lines[it-1].end + 1
-                                            )
+                                            player.seek(line.start)
+                                            if (!player.isPlaying) {
+                                                player.play()
+                                            }
                                         }
                                     }
                                 )
-                                .padding(
-                                    horizontal = HorizontalPadding /2,
-                                    vertical = HorizontalPadding / 2
+                            },
+                            focusedColor = focusedColor,
+                            unfocusedColor = unfocusedColor,
+                            focusLift = 0.dp,
+                            contentPadding = PaddingValues(
+                                top = pv.calculateTopPadding() + 42.dp,
+                                bottom = pv.calculateBottomPadding()
+                            ),
+                            idleIndicator = {
+                                LyricsDefaults.IdleIndicator(
+                                    index = it,
+                                    state = lyricsState,
+                                    focusedColor = focusedColor,
+                                    unfocusedColor = unfocusedColor,
+                                    modifier = Modifier
+                                        .padding(
+                                            horizontal = HorizontalPadding / 2,
+                                            vertical = VerticalPadding
+                                        )
+                                        .clip(MaterialTheme.shapes.medium)
+                                        .clickable(
+                                            onClick = {
+                                                scope.launch {
+                                                    player.seek(
+                                                        if (it == 0) 0 else lyricsState.lyrics.lines[it - 1].end + 1
+                                                    )
+                                                }
+                                            }
+                                        )
+                                        .padding(
+                                            horizontal = HorizontalPadding / 2,
+                                            vertical = HorizontalPadding / 2
+                                        )
                                 )
+                            }
                         )
                     }
-                )
+                }
+
+                if (!isVertical) {
+                    Spacer(Modifier.weight(.25f))
+                }
             }
         }
     }
@@ -295,28 +375,16 @@ fun SongScreen(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-private fun LyricsTopBar(
+private fun LyricsHeaderVertical(
     cover : Painter,
     name : String,
     artist : String
 ) {
 
-//    val background =  Brush.verticalGradient(
-//        0f to Color.Black,
-//        .9f to Color.Black,
-//        1f to Color.Transparent
-//    )
     Row(
         modifier = Modifier
             .fillMaxWidth()
 
-//            .background(
-//                Brush.verticalGradient(
-//                    0f to MaterialTheme.colorScheme.background,
-//                    .9f to MaterialTheme.colorScheme.background,
-//                    1f to Color.Transparent
-//                )
-//            )
             .windowInsetsPadding(TopAppBarDefaults.windowInsets)
             .padding(horizontal = HorizontalPadding)
             .padding(bottom = 28.dp, top = 8.dp)
@@ -367,6 +435,73 @@ private fun LyricsTopBar(
                 .padding(VerticalPadding)
                 .size(20.dp)
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@Composable
+private fun LyricsHeaderHorizontal(
+    cover : Painter,
+    name : String,
+    artist : String,
+    modifier : Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+    ) {
+
+        Image(
+            painter = cover,
+            contentDescription = "Cover",
+            modifier = Modifier
+                .aspectRatio(1f)
+                .fillMaxWidth()
+                .shadow(elevation = 12.dp)
+                .clip(MaterialTheme.shapes.small)
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(
+                    text = name,
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    modifier = Modifier.basicMarquee(
+                        iterations = Int.MAX_VALUE
+                    ),
+                )
+                Text(
+                    text = artist,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Normal,
+                    color = LocalContentColor.current.copy(alpha = .5f),
+                    maxLines = 1,
+                    modifier = Modifier.basicMarquee(
+                        iterations = Int.MAX_VALUE
+                    ),
+                )
+            }
+            val uriHandler = LocalUriHandler.current
+
+            Icon(
+                painter = painterResource(Res.drawable.cmp),
+                contentDescription = null,
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable {
+                        uriHandler.openUri("https://github.com/alexzhirkevich/klyrics")
+                    }
+                    .background(LocalContentColor.current.copy(alpha = .1f))
+                    .padding(VerticalPadding)
+                    .size(28.dp)
+            )
+        }
     }
 }
 

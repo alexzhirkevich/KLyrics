@@ -50,7 +50,13 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.foundation)
             implementation(compose.animation)
-            implementation(libs.player)
+        }
+
+        val desktopMain by getting {
+            dependencies {
+                implementation(libs.player)
+
+            }
         }
     }
 }

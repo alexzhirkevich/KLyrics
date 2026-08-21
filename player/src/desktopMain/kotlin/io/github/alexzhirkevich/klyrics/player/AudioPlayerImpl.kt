@@ -1,20 +1,17 @@
 package io.github.alexzhirkevich.klyrics.player
 
-import androidx.compose.animation.core.withInfiniteAnimationFrameNanos
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.withFrameMillis
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import io.github.kdroidfilter.composemediaplayer.audio.AudioPlayer as Player
 import io.github.kdroidfilter.composemediaplayer.audio.isPlaying
 
-private class AudioPlayerImpl : AudioPlayer {
+internal class AudioPlayerImpl : AudioPlayer {
 
     private val player = Player()
 
@@ -54,7 +51,3 @@ private class AudioPlayerImpl : AudioPlayer {
 }
 
 
-@Composable
-fun rememberAudioPlayer2(duration : Int) : AudioPlayer {
-    return remember { AudioPlayerImpl() }
-}

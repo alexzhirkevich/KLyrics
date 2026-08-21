@@ -55,7 +55,7 @@ kotlin {
             desktopMain.dependsOn(this)
 //            iosMain.get().dependsOn(this)
 //            macosMain.get().dependsOn(this)
-//            jsMain.get().dependsOn(this)
+            jsMain.get().dependsOn(this)
             wasmJsMain.dependsOn(this)
         }
     }
@@ -144,4 +144,3 @@ if (System.getenv("GPG_KEY") != null) {
     }
 }
 
-composeCompiler.enableStrongSkippingMode = true

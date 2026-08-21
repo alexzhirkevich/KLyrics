@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 
@@ -37,9 +36,9 @@ fun ImageMeshGradient(
     val infiniteTransition = rememberInfiniteTransition()
     val time by infiniteTransition.animateFloat(
         initialValue = 0f,
-        targetValue = 100f,
+        targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(100_000, easing = LinearEasing),
+            animation = tween(45_000, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
         ),
     )
@@ -73,35 +72,38 @@ fun ImageMeshGradient(
             modifier = Modifier
                 .matchParentSize()
                 .onSizeChanged { viewSize = it }
-                .blur(75.dp)
+                .blur(60.dp)
                 .alpha(.35f)
-                .graphicsLayer(
-                    scaleX = 1.5f,
-                    scaleY = 1.5f,
-                    renderEffect = distortion
-                )
-        )
-
-        Image(
-            painter = image,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .matchParentSize()
-                .onSizeChanged { viewSize = it }
-                .offset {
-                    IntOffset(0, viewSize.height/4)
+                .graphicsLayer {
+                    rotationZ = time * 360f
                 }
-                .rotate(135f)
-                .blur(90.dp, edgeTreatment = BlurredEdgeTreatment.Unbounded)
-                .alpha(.35f)
-                .graphicsLayer(
-                    scaleX = 2f,
-                    scaleY = 2f,
+                .graphicsLayer {
+                    scaleX = 1.5f
+                    scaleY = 1.5f
                     renderEffect = distortion
-                )
-
+                }
         )
+
+//        Image(
+//            painter = image,
+//            contentDescription = null,
+//            contentScale = ContentScale.Crop,
+//            modifier = Modifier
+//                .matchParentSize()
+//                .onSizeChanged { viewSize = it }
+//                .offset {
+//                    IntOffset(0, viewSize.height/4)
+//                }
+//                .rotate(135f)
+//                .blur(60.dp, edgeTreatment = BlurredEdgeTreatment.Unbounded)
+//                .alpha(.35f)
+//                .graphicsLayer(
+//                    scaleX = 2f,
+//                    scaleY = 2f,
+//                    renderEffect = distortion
+//                )
+//
+//        )
     }
 }
 @Composable

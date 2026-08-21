@@ -19,7 +19,7 @@ suspend fun loadLyrics(
     return Lyrics(
         duration = l.duration,
         lines = l.lines.map {
-            LyricsLine.WordSynced(
+            LyricsLine.Syllable(
                 start = it.start,
                 end = it.end,//words.last().end,
                 alignment = if (it.singer == 1) Alignment.Start else Alignment.End,
@@ -29,7 +29,7 @@ suspend fun loadLyrics(
                         end = w.end,
                         content = w.content,
                         firstCharIndexInLine = it.words.take(i).fastSumBy { it.content.length } + i,
-                        isBackground = w.bg
+                        isAdLib = w.bg
                     )
                 }
             )

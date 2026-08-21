@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 @Composable
 actual fun rememberAudioPlayer(duration : Int): AudioPlayer {
     return remember {
-        MockPlayer(0, duration)
+        AudioPlayerImpl()
+//        MockPlayer(0, duration)
     }
 }
