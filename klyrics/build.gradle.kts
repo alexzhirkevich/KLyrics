@@ -12,7 +12,6 @@ plugins {
 }
 
 group = "io.github.alexzhirkevich"
-version = libs.versions.compottie.get()
 
 val _jvmTarget = findProperty("jvmTarget") as String
 
@@ -22,15 +21,11 @@ kotlin {
 
     androidTarget{
         publishLibraryVariants("release")
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = _jvmTarget
-            }
-        }
+
     }
-    iosArm64()
-    iosX64()
-    iosSimulatorArm64()
+//    iosArm64()
+//    iosX64()
+//    iosSimulatorArm64()
 
     wasmJs(){
         browser()
@@ -39,15 +34,11 @@ kotlin {
         browser()
     }
     jvm("desktop"){
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = _jvmTarget
-            }
-        }
+        
     }
 
-    macosArm64()
-    macosX64()
+//    macosArm64()
+//    macosX64()
 
 
     sourceSets {
@@ -62,8 +53,8 @@ kotlin {
         val skikoMain by creating {
             dependsOn(commonMain.get())
             desktopMain.dependsOn(this)
-            iosMain.get().dependsOn(this)
-            macosMain.get().dependsOn(this)
+//            iosMain.get().dependsOn(this)
+//            macosMain.get().dependsOn(this)
             jsMain.get().dependsOn(this)
             wasmJsMain.dependsOn(this)
         }
@@ -153,4 +144,3 @@ if (System.getenv("GPG_KEY") != null) {
     }
 }
 
-composeCompiler.enableStrongSkippingMode = true

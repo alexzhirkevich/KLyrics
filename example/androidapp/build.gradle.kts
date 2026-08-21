@@ -25,9 +25,9 @@ android {
         sourceCompatibility = JavaVersion.toVersion(_jvmTarget)
         targetCompatibility = JavaVersion.toVersion(_jvmTarget)
     }
-    kotlinOptions {
-        jvmTarget = _jvmTarget
-    }
+//    kotlinOptions {
+//        jvmTarget = _jvmTarget
+//    }
     buildTypes {
         getByName("release") {
             signingConfig = signingConfigs.getByName("debug")

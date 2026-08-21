@@ -3,13 +3,12 @@ package io.github.alexzhirkevich.klyrics
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
-import kotlin.math.roundToInt
 
 
 @Immutable
-class Lyrics(
+data class Lyrics(
     val duration: Int,
-    val lanes: List<LyricsLane>,
+    val lines: List<LyricsLine>,
 )
 
 @Immutable
@@ -19,7 +18,7 @@ interface LyricsEntry {
 }
 
 @Immutable
-sealed interface LyricsLane : LyricsEntry {
+sealed interface LyricsLine : LyricsEntry {
 
     val content: String
 
@@ -37,12 +36,12 @@ sealed interface LyricsLane : LyricsEntry {
     ): Float
 
     @Immutable
-    data class WordSynced(
+    data class Syllable(
         override val start: Int = 0,
         override val end: Int = 0,
         override val alignment: Alignment.Horizontal = Alignment.Start,
         override val words: List<LyricsWord>,
-    ) : LyricsLane {
+    ) : LyricsLine {
 
         override fun isFocused(playback: Int): Boolean {
             return playback in start..end
@@ -66,12 +65,12 @@ sealed interface LyricsLane : LyricsEntry {
     }
 
     @Immutable
-    data class Default(
+    data class LineSynced(
         override val start: Int = 0,
         override val end: Int = 0,
         override val alignment: Alignment.Horizontal = Alignment.Start,
         override val content: String
-    ) : LyricsLane {
+    ) : LyricsLine {
 
         override val words: List<LyricsWord>
 
@@ -98,7 +97,7 @@ sealed interface LyricsLane : LyricsEntry {
         override val end: Int = 0,
         override val alignment: Alignment.Horizontal = Alignment.Start,
         override val content: String
-    ) : LyricsLane {
+    ) : LyricsLine {
 
         override val words: List<LyricsWord>
 
@@ -128,6 +127,9 @@ data class LyricsWord(
     override val end : Int = 0,
     val content : String = "",
     val firstCharIndexInLine : Int,
-    val isBackground : Boolean = false
+    /**
+     * Word that should have smaller font size and be aligned to the bottom of the line
+     * */
+    val isAdLib : Boolean = false
 ) : LyricsEntry
 

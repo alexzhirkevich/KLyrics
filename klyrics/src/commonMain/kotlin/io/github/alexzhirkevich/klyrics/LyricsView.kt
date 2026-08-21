@@ -3,7 +3,7 @@ package io.github.alexzhirkevich.klyrics
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.FiniteAnimationSpec
@@ -12,10 +12,12 @@ import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.createAnimation
 import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -34,6 +36,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -47,16 +50,18 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.SubcomposeLayout
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -69,9 +74,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastMapIndexed
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -90,7 +99,6 @@ class LyricsState(
         internal set
 
     var isAutoScrolling : Boolean by mutableStateOf(isPlaying())
-        internal set
 }
 
 @Composable
@@ -113,12 +121,9 @@ fun rememberLyricsState(
         LyricsState(
             lyrics = lyrics,
             lazyListState = lazyListState,
-            isPlaying = {
-                updatedIsPlaying()
-            }
-        ){
-            updatedTime()
-        }
+            isPlaying = { updatedIsPlaying() },
+            playbackTime = { updatedTime() }
+        )
     }
 }
 
@@ -135,7 +140,7 @@ fun Lyrics(
     unfocusedColor : Color,
     textStyle : (Int) -> TextStyle = {
         when {
-            state.lyrics.lanes[it].alignment == Alignment.End ->  LyricsDefaults.TextStyleEndAligned
+            state.lyrics.lines[it].alignment == Alignment.End ->  LyricsDefaults.TextStyleEndAligned
             else ->  LyricsDefaults.TextStyleEndAligned
         }
     },
@@ -145,9 +150,12 @@ fun Lyrics(
         )
     },
     fade: Dp = LyricsDefaults.Fade,
+    unfocusedShadow : Shadow = LyricsDefaults.UnfocusedShadow,
+    focusLift : Dp = LyricsDefaults.FocusLift,
     autoscrollMode: AutoscrollMode = LyricsDefaults.AutoScrollMode,
     autoscrollDelay : Duration = LyricsDefaults.AutoscrollDelay,
-    autoscrollAnimationSpec : FiniteAnimationSpec<Float> = LyricsDefaults.AutoScrollAnimation,
+    autoscrollAnimationSpec : FiniteAnimationSpec<Float> = LyricsDefaults.AutoscrollAnimation,
+    elasticCatchUpStagger: Duration = LyricsDefaults.ElasticCatchUpStagger,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     modifier: Modifier = Modifier,
     lineModifier: (Int) -> Modifier = { Modifier },
@@ -165,10 +173,14 @@ fun Lyrics(
         cacheSize = 30
     )
 
-    val lines = state.lyrics.lanes
+    val lines = state.lyrics.lines
 
     var isScrollingProgrammatically by remember {
         mutableStateOf(false)
+    }
+
+    val lineOffsets = remember(state) {
+        mutableStateMapOf<Int, Animatable<Float, AnimationVector1D>>()
     }
 
     LaunchedEffect(state) {
@@ -229,30 +241,86 @@ fun Lyrics(
             mutableStateOf(state.firstFocusedLine)
         }
 
-        LaunchedEffect(state.firstFocusedLine, state) {
+        LaunchedEffect(state.firstFocusedLine, state, elasticCatchUpStagger) {
             try {
                 isScrollingProgrammatically = true
+
+                val offsetsBefore = state.lazyListState.layoutInfo.visibleItemsInfo
+                    .associate { it.index to it.offset }
 
                 val lastItem = state.lazyListState.layoutInfo.visibleItemsInfo.find {
                     it.index == lastIndex
                 }
 
-                val scrollToItem =  state.lazyListState.layoutInfo.visibleItemsInfo.find {
+                val scrollToItem = state.lazyListState.layoutInfo.visibleItemsInfo.find {
                     it.index == state.firstFocusedLine
                 }
 
-                if (lastItem != null && scrollToItem != null && scrollToItem.offset >= 0){
+                if (lastItem != null && scrollToItem != null && scrollToItem.offset >= 0) {
                     val diff = if (autoscrollMode == AutoscrollMode.Continuous)
-                            (scrollToItem.offset - lastItem.offset).toFloat()
+                        (scrollToItem.offset - lastItem.offset).toFloat()
                     else scrollToItem.offset.toFloat()
 
-                    state.lazyListState.animateScrollBy(
-                        value = diff,
-                        animationSpec = autoscrollAnimationSpec
-                    )
+                    if (elasticCatchUpStagger.isPositive()) {
+                        state.lazyListState.scrollBy(diff)
+                    } else {
+                        state.lazyListState.animateScrollBy(diff, autoscrollAnimationSpec)
+                    }
                 } else {
                     state.lazyListState.animateScrollToItem(state.firstFocusedLine)
                 }
+
+                if (elasticCatchUpStagger.isPositive()) {
+                    val offsetsAfter = state.lazyListState.layoutInfo.visibleItemsInfo
+                        .associate { it.index to it.offset }
+
+                    val focused = state.firstFocusedLine
+
+                    if (!offsetsBefore.containsKey(focused) || !offsetsAfter.containsKey(focused)) {
+                        return@LaunchedEffect
+                    }
+
+                    val delta = (offsetsBefore[focused]!! - offsetsAfter[focused]!!).toFloat()
+
+                    offsetsBefore.keys
+                        .intersect(offsetsAfter.keys)
+                        .forEach { idx ->
+
+                        val anim = lineOffsets.getOrPut(idx) { Animatable(0f) }
+                        val distance = idx - focused
+
+                        if (distance >= 0) {
+                            launch {
+                                try {
+                                    val delay = elasticCatchUpStagger * sqrt(distance.toDouble())
+
+                                    withTimeoutOrNull(delay) {
+                                        snapshotFlow {
+                                            (focused until idx).sumOf {
+                                                (lineOffsets[it]?.value ?: 0f).toInt()
+                                            }
+                                        }.collectLatest {
+                                            anim.snapTo(delta - it)
+                                        }
+                                        awaitCancellation()
+                                    }
+
+                                    val prevTotal = (focused until idx).sumOf {
+                                        (lineOffsets[it]?.value ?: 0f).toInt()
+                                    }
+                                    anim.snapTo(delta - prevTotal.toFloat())
+                                    anim.animateTo(
+                                        targetValue = 0f,
+                                        animationSpec = autoscrollAnimationSpec
+                                    )
+                                } finally {
+                                    anim.snapTo(0f)
+                                }
+                            }
+                        }
+                    }
+                }
+
                 lastIndex = state.firstFocusedLine
             } finally {
                 isScrollingProgrammatically = false
@@ -278,6 +346,7 @@ fun Lyrics(
 
             val style = textStyle(idx)
             val backgroundStyle = backgroundTextStyle(style)
+
             LyricsLaneView(
                 state = state,
                 line = line,
@@ -285,12 +354,15 @@ fun Lyrics(
                 style = textStyle(idx),
                 backgroundTextStyle = backgroundStyle,
                 fade = fade,
+                focusLift = focusLift,
+                unfocusedShadow = unfocusedShadow,
                 focusedSolidBrush = focusedSolidBrush,
                 unfocusedSolidBrush = unfocusedSolidBrush,
                 focusedColor = focusedColor,
                 unfocusedColor = unfocusedColor,
                 measurer = measurer,
-                modifier = lineModifier(idx)
+                modifier= lineModifier(idx),
+                offset = { lineOffsets[idx]?.value?.coerceAtLeast(0f) ?: 0f },
             )
         }
     }
@@ -310,26 +382,23 @@ object LyricsDefaults {
         )
     )
 
-    val BackgroundTextStyle = TextStyle(
-        fontSize = 16.sp,
-        lineHeight = 20.sp,
-        fontWeight = FontWeight.SemiBold
-    ).copy(
-        lineHeightStyle = LineHeightStyle(
-            alignment = LineHeightStyle.Alignment.Center,
-            trim = LineHeightStyle.Trim.None
-        )
-    )
-
     val TextStyleEndAligned = TextStyle.copy(
         textAlign = TextAlign.End
     )
 
     val Fade = 32.dp
+    val UnfocusedShadow : Shadow
+        @Composable
+        get() = with (LocalDensity.current) {
+            Shadow(Color.Black, blurRadius = 0.5.dp.toPx())
+        }
 
+    val FocusedShadowRadius = 0.dp
     val AutoscrollDelay = 3.seconds
     val AutoScrollMode = AutoscrollMode.Docked
-    val AutoScrollAnimation = spring<Float>(stiffness = Spring.StiffnessMediumLow)
+    val ElasticCatchUpStagger = 100.milliseconds
+    val AutoscrollAnimation = tween<Float>(450)
+    val FocusLift = 2.dp
 
     @Composable
     fun IdleIndicator(
@@ -372,8 +441,8 @@ private fun DefaultLyricsIdleIndicator(
 ) {
     val currentLineIdx = index
 
-    val startTime = if (currentLineIdx == 0) 0 else state.lyrics.lanes[currentLineIdx - 1].end
-    val endTime = state.lyrics.lanes[currentLineIdx].start
+    val startTime = if (currentLineIdx == 0) 0 else state.lyrics.lines[currentLineIdx - 1].end
+    val endTime = state.lyrics.lines[currentLineIdx].start
 
     val visible by remember(state) {
         derivedStateOf {
@@ -382,7 +451,7 @@ private fun DefaultLyricsIdleIndicator(
             t < endTime &&
                     index == state.firstFocusedLine &&
                     endTime - startTime > LyricsIdleIndicatorMinDuration ||
-                    index == 0 && t < state.lyrics.lanes[0].start &&
+                    index == 0 && t < state.lyrics.lines[0].start &&
                     startTime > LyricsIdleIndicatorMinDuration
         }
     }
@@ -405,16 +474,8 @@ private fun DefaultLyricsIdleIndicator(
                 1f at IdleIn
                 IdleScaleMax at IdleIn + durationWithoutEnterExit * 1 / 3
                 IdleScaleMin at IdleIn + durationWithoutEnterExit * 2 / 3
-//                        1f at circlesEnd
                 IdleScaleMax at IdleIn + durationWithoutEnterExit
-
-                repeat(EasingSteps) {
-                    val f = it.toFloat() / EasingSteps
-                    1.15f * (1f - Easing.transform(f)) at ((IdleIn + durationWithoutEnterExit) +
-                            IdleOut / EasingSteps * it)
-                }
-
-                0f at totalDuration
+                0f at totalDuration using FastOutLinearInEasing
             }.vectorize(Float.VectorConverter).createAnimation(
                 initialValue = AnimationVector1D(1f),
                 targetValue = AnimationVector1D(1f),
@@ -488,8 +549,12 @@ private fun DefaultLyricsIdleIndicator(
     }
 }
 
-private val Easing = FastOutLinearInEasing
-private val EasingSteps = 10
+private const val LongWordThresholdMs = 150
+private const val MinStretchDurationMs = 1000
+private const val LetterArcBumpWidth = 0.9f
+private const val LetterArcMaxScale = 1.1f
+private val LetterArcMaxLift = 2.dp
+private val LetterArcMaxGlowRadius = 2.dp
 private const val IdleIn = 1000
 private const val IdleOut = 300
 private const val IdleScaleMax = 1.15f
@@ -508,7 +573,7 @@ private val DefaultIdleExitTransition = shrinkVertically(
     animationSpec =  spring(stiffness = Spring.StiffnessMediumLow)
 )
 
-private fun List<LyricsLane>.findLane(ms : Int) : Int {
+private fun List<LyricsLine>.findLane(ms : Int) : Int {
 
     return binarySearchClosest {
         when {
@@ -541,10 +606,11 @@ internal fun <T> List<T>.binarySearchClosest(comparison: (T) -> Int): Int {
 
 @Composable
 private fun LazyItemScope.Line(
-    line: LyricsLane,
+    line: LyricsLine,
     style : TextStyle,
-    backgroundTextStyle: TextStyle,
+    adLibTextStyle: TextStyle,
     measurer : TextMeasurer,
+    offset : () -> Float,
     modifier: Modifier,
     draw : CacheDrawScope.(Constraints, TextLayoutResult) -> DrawResult
 ) {
@@ -555,10 +621,11 @@ private fun LazyItemScope.Line(
             text = line.content,
             spanStyles = line.words.map { w ->
                 AnnotatedString.Range(
-                    item = if (w.isBackground)
-                        backgroundTextStyle.toSpanStyle()
-                    else
-                        style.toSpanStyle(),
+                    item = if (w.isAdLib) {
+                        adLibTextStyle.toSpanStyle()
+                    } else {
+                        style.toSpanStyle()
+                    },
                     start = len,
                     end = len + w.content.length
                 ).also {
@@ -569,7 +636,15 @@ private fun LazyItemScope.Line(
     }
 
     Column(
-        modifier = Modifier.fillParentMaxWidth(),
+        modifier = Modifier
+            .fillParentMaxWidth()
+            .layout { m,c ->
+                val p = m.measure(c)
+                val o = offset().roundToInt()
+                layout(p.width, p.height + o){
+                    p.place(0, o)
+                }
+            },
         horizontalAlignment = line.alignment
     ) {
         SubcomposeLayout(
@@ -597,7 +672,9 @@ private fun LazyItemScope.Line(
                 Spacer(
                     Modifier
                         .fillMaxSize()
-                        .drawWithCache { draw(constraints, measureResult) }
+                        .drawWithCache {
+                            draw(constraints, measureResult)
+                        }
                 )
             }.first()
 
@@ -616,31 +693,34 @@ private fun LazyItemScope.Line(
 @Composable
 private fun LazyItemScope.LyricsLaneView(
     state: LyricsState,
-    line: LyricsLane,
+    line: LyricsLine,
     index : Int,
     style : TextStyle,
     backgroundTextStyle: TextStyle,
     fade: Dp,
+    unfocusedShadow : Shadow,
+    focusLift: Dp,
     focusedSolidBrush : Brush,
     unfocusedSolidBrush : Brush,
     focusedColor : Color,
     unfocusedColor : Color,
     measurer : TextMeasurer,
+    offset : () -> Float,
     modifier: Modifier = Modifier,
 ) {
 
     val unfocused by remember {
         derivedStateOf {
-            index !in state.lyrics.lanes.indices || !line.isFocused(state.playbackTime())
+            index !in state.lyrics.lines.indices || !line.isFocused(state.playbackTime())
         }
     }
-
 
     Line(
         line = line,
         style = style,
-        backgroundTextStyle = backgroundTextStyle,
+        adLibTextStyle = backgroundTextStyle,
         measurer = measurer,
+        offset = offset,
         modifier = modifier
     ) { parentConstraints, measureResult ->
 
@@ -648,23 +728,50 @@ private fun LazyItemScope.LyricsLaneView(
             return@Line onDrawBehind {
                 drawText(
                     textLayoutResult = measureResult,
-                    color = unfocusedColor
+                    color = unfocusedColor,
+                    shadow = unfocusedShadow
                 )
             }
         }
 
         val wordsToDraw = line.words.fastMapIndexed { idx, w ->
 
+            val wordStyle = if (w.isAdLib) backgroundTextStyle else style
+
             val layout = measurer.measure(
                 text = w.content,
-                style = if (w.isBackground) backgroundTextStyle else style,
+                style = wordStyle,
                 constraints = measureResult.layoutInput.constraints
             )
 
+            val wordTopLeft = measureResult.getBoundingBox(w.firstCharIndexInLine).topLeft
+
+            val durationF = (w.end - w.start).toFloat()
+            val isLongWord = w.content.length > 2 &&
+                    durationF / w.content.length > LongWordThresholdMs &&
+                    durationF > MinStretchDurationMs   // например, 500-600ms
+
+
+            val letters = if (isLongWord) {
+                w.content.indices.map { charIdx ->
+                    val charLayout = measurer.measure(
+                        text = w.content[charIdx].toString(),
+                        style = wordStyle,
+                        constraints = measureResult.layoutInput.constraints
+                    )
+                    LetterLayout(
+                        layout = charLayout,
+                        topLeft = wordTopLeft + layout.getBoundingBox(charIdx).topLeft
+                    )
+                }
+            } else emptyList()
+
             DrawWord(
-                w = w,
+                word = w,
                 layout = layout,
-                topLeft = measureResult.getBoundingBox(w.firstCharIndexInLine).topLeft,
+                idx = idx,
+                topLeft = wordTopLeft,
+                letters = letters,
                 brush = { maxWidth, ms ->
                     val progress = line.progress(idx, ms)
 
@@ -676,7 +783,7 @@ private fun LazyItemScope.LyricsLaneView(
                                 0f to focusedColor,
                                 progress - fade.toPx()/maxWidth to focusedColor,
                                 progress + fade.toPx()/maxWidth to unfocusedColor,
-                                1f  to unfocusedColor
+                                1f to unfocusedColor
                             )
                         }
                     }
@@ -685,12 +792,111 @@ private fun LazyItemScope.LyricsLaneView(
         }
 
         onDrawBehind {
-            wordsToDraw.fastForEach { l ->
-                drawText(
-                    textLayoutResult = l.layout,
-                    topLeft = l.topLeft,
-                    brush = l.brush(parentConstraints.maxWidth, state.playbackTime())
-                )
+            wordsToDraw.fastForEach { word ->
+
+                val playback = state.playbackTime()
+
+                val wordDuration = word.word.end - word.word.start
+                val wordProgress = (playback - word.word.start)
+                    .coerceIn(0, wordDuration)
+                    .toFloat()
+                    .div(wordDuration)
+                val elevationProgress = if (focusLift.value > 0f) {
+                    val duration = maxOf(1000, wordDuration)
+                    (playback - word.word.start)
+                        .coerceIn(0, duration)
+                        .toFloat()
+                        .div(duration)
+                } else 0f
+
+                if (word.letters.isNotEmpty()) {
+
+                    val letterCount = word.letters.size
+                    val maxLiftPx = LetterArcMaxLift.toPx()
+
+                    // волна стартует раньше первой буквы и гаснет позже последней —
+                    // иначе у крайних букв не остаётся времени подняться/опуститься
+                    val virtualProgress = -LetterArcBumpWidth +
+                            wordProgress * (1f + 2f * LetterArcBumpWidth)
+
+                    val fadeFraction = (fade.toPx() / word.layout.size.width.coerceAtLeast(1))
+                        .coerceIn(0.001f, 1f)
+
+                    word.letters.forEachIndexed { charIdx, letter ->
+
+                        val progressPerChar = 1f / word.letters.size
+                        val progress = (line.progress(word.idx, playback) - (progressPerChar * charIdx))/ progressPerChar
+
+                        val letterBrush = when {
+                            progress <= 0.01 -> unfocusedSolidBrush
+                            progress >= 0.99f -> focusedSolidBrush
+                            else -> {
+                                Brush.horizontalGradient(
+                                    0f to focusedColor,
+                                    progress - fadeFraction to focusedColor,
+                                    progress + fadeFraction to unfocusedColor,
+                                    1f to unfocusedColor
+                                )
+                            }
+                        }
+
+                        val letterPos = if (letterCount > 1)
+                            charIdx / (letterCount - 1).toFloat()
+                        else 0.5f
+
+                        val distance = kotlin.math.abs(virtualProgress - letterPos)
+                        val bumpLinear = (1f - (distance / LetterArcBumpWidth).coerceIn(0f, 1f))
+
+                        val smooth1 = bumpLinear * bumpLinear * (3f - 2f * bumpLinear)
+                        val bump = smooth1 * smooth1 * (3f - 2f * smooth1)
+
+                        val letterScale = 1f + (LetterArcMaxScale - 1f) * bump
+                        val letterLiftPx = maxLiftPx * bump + focusLift.toPx() * wordProgress
+
+                        val letterCenter = letter.topLeft + Offset(
+                            letter.layout.size.width / 2f,
+                            letter.layout.size.height / 2f
+                        )
+
+                        translate(top = -letterLiftPx) {
+                            scale(scale = letterScale, pivot = letterCenter) {
+
+                                // сияние — отдельный проход прозрачным текстом с blur-тенью,
+                                // интенсивность синхронизирована с той же дугой (bump)
+                                if (bump > 0.01f) {
+                                    drawText(
+                                        textLayoutResult = letter.layout,
+                                        topLeft = letter.topLeft,
+                                        color = Color.Transparent,
+                                        shadow = Shadow(
+                                            color = focusedColor.copy(alpha = bump),
+                                            blurRadius = LetterArcMaxGlowRadius.toPx() * bump
+                                        )
+                                    )
+                                }
+
+                                drawText(
+                                    textLayoutResult = letter.layout,
+                                    topLeft = letter.topLeft,
+                                    brush = letterBrush,
+                                    shadow = unfocusedShadow
+                                )
+                            }
+                        }
+                    }
+                } else {
+                    val brush = word.brush(parentConstraints.maxWidth, playback)
+                    val topLeft = if (elevationProgress > 0f)
+                        word.topLeft - Offset(0f, focusLift.toPx() * elevationProgress)
+                    else word.topLeft
+
+                    drawText(
+                        textLayoutResult = word.layout,
+                        topLeft = topLeft,
+                        brush = brush,
+                        shadow = unfocusedShadow
+                    )
+                }
             }
         }
     }
@@ -698,11 +904,18 @@ private fun LazyItemScope.LyricsLaneView(
 
 
 
+@Immutable
+private data class LetterLayout(
+    val layout : TextLayoutResult,
+    val topLeft : Offset, // абсолютная позиция буквы (уже с учётом позиции слова в строке)
+)
 
 @Immutable
 private data class DrawWord(
-    val w : LyricsWord,
+    val word : LyricsWord,
+    val idx : Int,
     val layout : TextLayoutResult,
     val topLeft : Offset,
+    val letters : List<LetterLayout>, // непусто только для "долгих" слов
     val brush : (width : Int, playback : Int) -> Brush,
 )
