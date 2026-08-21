@@ -552,9 +552,9 @@ private fun DefaultLyricsIdleIndicator(
 private const val LongWordThresholdMs = 150
 private const val MinStretchDurationMs = 1000
 private const val LetterArcBumpWidth = 0.9f
-private const val LetterArcMaxScale = 1.1f
-private val LetterArcMaxLift = 2.dp
-private val LetterArcMaxGlowRadius = 2.dp
+private const val LetterArcMaxScale = 1.05f
+private val LetterArcMaxLift = 1.5.dp
+private val LetterArcMaxGlowRadius = 1.5.dp
 private const val IdleIn = 1000
 private const val IdleOut = 300
 private const val IdleScaleMax = 1.15f
