@@ -1,3 +1,4 @@
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.compose)
@@ -5,18 +6,22 @@ plugins {
 }
 
 kotlin {
-    js(IR){
+
+    applyDefaultHierarchyTemplate()
+
+    js {
         browser()
         binaries.executable()
     }
 
-    wasmJs(){
+    wasmJs {
         browser()
         binaries.executable()
     }
+
     sourceSets {
 
-        commonMain.dependencies {
+        webMain.dependencies {
             implementation(compose.ui)
             implementation(project(":example:shared"))
         }

@@ -191,12 +191,14 @@ fun SongScreen(
                         artist = song.artist
                     )
                 } else {
-                    Spacer(
-                        Modifier
-                            .height(128.dp)
-                            .fillMaxWidth()
-                            .pointerInput(0){}
-                    )
+                    with(LocalDensity.current) {
+                        Spacer(
+                            Modifier
+                                .height((constraints.maxHeight/7).toDp())
+                                .fillMaxWidth()
+                                .pointerInput(0) {}
+                        )
+                    }
                 }
             },
             bottomBar = {
