@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>KLyrics</title>
-    <!-- Combined standard mobile properties with strict viewport instructions -->
+    <!-- Lock down the layout bounds strictly -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#1c1b1f">
     <style>
         html {
             background-color: #1c1b1f;
             width: 100%;
-            height: -webkit-fill-available;
-            height: 100dvh;
+            height: 100%;
             margin: 0;
             padding: 0;
             overflow: hidden;
@@ -22,25 +21,28 @@
             margin: 0;
             padding: 0;
             width: 100%;
-            height: -webkit-fill-available;
-            height: 100dvh;
+            height: 100%;
             overflow: hidden;
             -webkit-text-size-adjust: 100%;
         }
 
+
         #app-root {
-            position: fixed;
+            position: absolute;
             top: 0;
+            bottom: 0;
             left: 0;
+            right: 0;
             width: 100%;
-            height: 100%;
 
-<!--            padding-top: env(safe-area-inset-top, 0px);-->
-<!--            padding-bottom: env(safe-area-inset-bottom, 0px);-->
-<!--            padding-left: env(safe-area-inset-left, 0px);-->
-<!--            padding-right: env(safe-area-inset-right, 0px);-->
+            height: 100vh;
 
+            margin: 0;
+            padding: 0;
             box-sizing: border-box;
+
+            background-color: #1c1b1f;
+
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
@@ -48,7 +50,6 @@
 </head>
 <body>
 <div id="app-root"></div>
-
 <script src="webApp.js"></script>
 </body>
 </html>
